@@ -116,6 +116,10 @@ function toJaError(err) {
   const msg = (err && err.message) || "";
   if (msg.includes("Invalid login credentials"))
     return "メールアドレスまたはパスワードが正しくありません。";
+  if (msg.includes("is invalid"))
+    return "メールアドレスの形式が正しくありません。実際に受信できるアドレスを入力してください。";
+  if (msg.includes("Email not confirmed"))
+    return "メールアドレスが未確認です。受信した確認メールのリンクをクリックしてください。";
   if (msg.includes("already registered"))
     return "このメールアドレスはすでに登録されています。ログインしてください。";
   if (msg.includes("Password should be"))
