@@ -1,21 +1,22 @@
 import UpgradePanel from "@/components/UpgradePanel";
 import { EXAMS } from "@/lib/examMeta";
-import { PRICE_LABEL } from "@/lib/site";
+import { SITE_NAME, PRICE_LABEL } from "@/lib/site";
 
-export const metadata = { title: "全試験パックを購入" };
+export const metadata = { title: "会員登録" };
 
 export default function UpgradePage() {
   return (
     <div>
-      <h1>全試験パック</h1>
+      <h1>会員登録</h1>
       <div className="subtitle">
-        買い切り{PRICE_LABEL}。月額課金はありません。一度の購入で今後追加される模試もすべて使えます。
+        {SITE_NAME}のすべての模擬試験をご利用いただけます。
+        お支払いは一度きり（{PRICE_LABEL}）で、月額費用はかかりません。
       </div>
 
       <div className="price-card">
-        <div className="price-label">外資コンサル志望者向け 全試験パック</div>
+        <div className="price-label">会員プラン</div>
         <div className="price">{PRICE_LABEL}</div>
-        <div className="price-note">買い切り・追加課金なし</div>
+        <div className="price-note">お支払いは一度きり・追加費用なし</div>
         <ul>
           {EXAMS.map((e) => (
             <li key={e.id}>
@@ -33,17 +34,17 @@ export default function UpgradePage() {
         <p style={{ fontSize: 14 }}>
           <b>Q. 支払い方法は？</b>
           <br />
-          クレジットカード・デビットカードに対応しています（Stripeによる安全な決済）。
+          クレジットカード・デビットカードに対応しています（Stripeによる安全な決済です）。
         </p>
         <p style={{ fontSize: 14 }}>
-          <b>Q. 購入後すぐに使えますか？</b>
+          <b>Q. 登録後すぐに使えますか？</b>
           <br />
-          はい。決済完了と同時に、ログイン中のアカウントで全試験が解放されます。
+          はい。お手続き完了と同時に、ログイン中のアカウントですべての模試が利用できるようになります。
         </p>
         <p style={{ fontSize: 14 }}>
           <b>Q. 別の端末でも使えますか？</b>
           <br />
-          同じアカウントでログインすれば、どの端末からでも全問題にアクセスできます。
+          同じアカウントでログインすれば、どの端末からでもご利用いただけます。
         </p>
       </div>
     </div>

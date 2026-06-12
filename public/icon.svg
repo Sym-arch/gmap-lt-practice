@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#1d4ed8"/>
-  <text x="256" y="300" font-family="Arial, sans-serif" font-size="170" font-weight="bold" fill="#ffffff" text-anchor="middle">G</text>
-  <rect x="120" y="356" width="272" height="28" rx="14" fill="#93c5fd"/>
-  <rect x="170" y="404" width="172" height="28" rx="14" fill="#60a5fa"/>
+  <rect width="512" height="512" rx="56" fill="#197b55"/>
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="230">
+    <text x="62" y="338">T</text>
+    <text x="208" y="338">F</text>
+    <text x="332" y="330" transform="rotate(7 400 250)">P</text>
+  </g>
 </svg>

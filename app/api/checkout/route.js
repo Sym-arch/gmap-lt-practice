@@ -37,8 +37,8 @@ export async function POST(req) {
           currency: "jpy",
           unit_amount: PRICE_YEN, // JPYは最小単位が1円
           product_data: {
-            name: `${SITE_NAME} 全試験パック（買い切り）`,
-            description: "GMAP(LT)・TG-WEB・玉手箱・SPI3 模擬試験 全回アクセス",
+            name: `${SITE_NAME} 会員プラン`,
+            description: "GMAP(LT)・TG-WEB・玉手箱・SPI3 模擬試験 全回アクセス（買い切り）",
           },
         },
         quantity: 1,

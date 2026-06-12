@@ -28,15 +28,15 @@ export default function SiteHeader() {
   return (
     <header className="site-header">
       <Link href="/" className="brand">
-        <span className="brand-mark">C</span>
+        <img src="/icon.svg" alt="" className="brand-img" />
         <span className="brand-name">{SITE_NAME}</span>
       </Link>
       <nav className="header-nav">
         {me?.premium ? (
-          <span className="premium-chip">プレミアム</span>
+          <span className="premium-chip">プレミアム会員</span>
         ) : (
           <Link href="/upgrade" className="header-upgrade">
-            ¥1,500で全試験解放
+            会員登録
           </Link>
         )}
         {me?.loggedIn ? (

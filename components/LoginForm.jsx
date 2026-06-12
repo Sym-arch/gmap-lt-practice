@@ -76,7 +76,7 @@ export default function LoginForm() {
           className={`auth-tab ${tab === "signup" ? "active" : ""}`}
           onClick={() => setTab("signup")}
         >
-          新規登録
+          アカウント作成
         </button>
       </div>
 

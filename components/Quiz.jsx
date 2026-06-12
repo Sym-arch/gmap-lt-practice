@@ -141,13 +141,13 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
   if (state === "locked") {
     return (
       <div className="card trial-end">
-        <div className="big">この模試はプレミアム限定です</div>
+        <div className="big">この模試は会員限定です</div>
         <p>
-          全試験パック（{PRICE_LABEL}・買い切り）を購入すると、
-          {examName}を含む4試験タイプの模擬試験すべてが解放されます。
+          会員登録すると、{examName}を含む4試験タイプの模擬試験すべてをご利用いただけます
+          （お支払いは一度きり {PRICE_LABEL}）。
         </p>
         <Link href="/upgrade" className="btn block">
-          全試験パックを見る
+          会員登録について見る
         </Link>
         <Link href={`/exams/${examId}`} className="link-btn">
           試験トップに戻る
@@ -186,11 +186,11 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
         <p>
           いま解いた{results.length}問は、本番想定より難度を上げた選抜問題です。
           <br />
-          全試験パックでは {examName} の残り全問に加え、
-          GMAP(LT)・TG-WEB・玉手箱・SPI3 すべての模試・解説・復習モードが解放されます。
+          会員登録すると、{examName}の続きに加え、
+          GMAP(LT)・TG-WEB・玉手箱・SPI3 すべての模試・解説・復習モードをご利用いただけます。
         </p>
         <Link href="/upgrade" className="btn block">
-          {PRICE_LABEL}で全試験を解放する（買い切り）
+          会員登録する
         </Link>
         <Link href={`/exams/${examId}`} className="link-btn">
           試験トップに戻る

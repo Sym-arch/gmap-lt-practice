@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { grantPurchase } from "@/lib/purchases";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "購入完了" };
+export const metadata = { title: "登録完了" };
 
 /* Stripe決済から戻ってきたページ。
    セッションをStripe APIで検証し、支払い済みならその場で購入記録を付与する
@@ -30,9 +30,9 @@ export default async function SuccessPage({ searchParams }) {
     <div className="card trial-end">
       {ok ? (
         <>
-          <div className="big">🎉 購入ありがとうございます！</div>
+          <div className="big">ご登録ありがとうございます</div>
           <p>
-            全試験パックが解放されました。
+            会員登録が完了しました。
             GMAP(LT)・TG-WEB・玉手箱・SPI3のすべての模擬試験をご利用いただけます。
           </p>
           <Link href="/" className="btn block">

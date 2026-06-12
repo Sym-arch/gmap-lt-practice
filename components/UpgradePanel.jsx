@@ -40,7 +40,7 @@ export default function UpgradePanel() {
   if (me.premium) {
     return (
       <div>
-        <div style={{ fontWeight: 800, marginBottom: 10 }}>✓ 購入済みです</div>
+        <div style={{ fontWeight: 800, marginBottom: 10 }}>✓ ご登録済みです</div>
         <Link href="/" className="btn">試験を選んで開始する</Link>
       </div>
     );
@@ -50,10 +50,10 @@ export default function UpgradePanel() {
     return (
       <div>
         <Link href="/login?next=/upgrade" className="btn">
-          ログイン／新規登録して購入へ進む
+          アカウントを作成して進む
         </Link>
         <div style={{ fontSize: 12, opacity: 0.8, marginTop: 10 }}>
-          購入情報をアカウントに紐づけるため、先にログインをお願いします。
+          ご登録内容をアカウントに紐づけるため、先にアカウント作成（無料）をお願いします。
         </div>
       </div>
     );
@@ -62,8 +62,11 @@ export default function UpgradePanel() {
   return (
     <div>
       <button className="btn" onClick={buy} disabled={busy}>
-        {busy ? "決済ページへ移動中…" : "購入する（Stripe決済へ）"}
+        {busy ? "お手続きページへ移動中…" : "会員登録を完了する"}
       </button>
+      <div style={{ fontSize: 12, opacity: 0.8, marginTop: 10 }}>
+        Stripeの安全な決済ページに移動します。
+      </div>
       {error && (
         <div className="error-box" style={{ marginTop: 12, color: "#fff", background: "rgba(255,255,255,0.15)" }}>
           {error}

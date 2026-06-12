@@ -5,13 +5,13 @@ import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 export const metadata = {
   title: `${SITE_NAME}｜${SITE_TAGLINE}`,
   description:
-    "GMAP(LT)・TG-WEB・玉手箱・SPI3の本格模擬試験。外資系コンサルティングファーム志望者向けのWebテスト対策。無料体験あり、買い切り¥1,500で全試験アクセス。",
+    "GMAP(LT)・TG-WEB・玉手箱・SPI3の本格模擬試験。外資系コンサルティングファーム志望者のためのWebテスト対策プラットフォーム。無料体験あり。",
   manifest: "/manifest.json",
   icons: { icon: "/icon.svg" },
 };
 
 export const viewport = {
-  themeColor: "#1d4ed8",
+  themeColor: "#197b55",
 };
 
 export default function RootLayout({ children }) {

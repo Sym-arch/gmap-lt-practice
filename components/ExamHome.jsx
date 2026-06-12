@@ -49,7 +49,7 @@ export default function ExamHome({ meta }) {
     if (!available) {
       badge = <span className="lock-badge">準備中</span>;
     } else if (locked) {
-      badge = <span className="lock-badge">🔒 プレミアム</span>;
+      badge = <span className="lock-badge">🔒 会員限定</span>;
     } else if (h) {
       badge = <span className="score-badge">ベスト {h.best}/{h.total}</span>;
     } else if (!premium && n === 1) {
@@ -101,9 +101,9 @@ export default function ExamHome({ meta }) {
 
       {!premium && (
         <div className="notice">
-          無料体験では「第1回」の最初の{FREE_QUESTION_COUNT}問を解けます。
-          全{meta.testCount}回・全問へのアクセスは{" "}
-          <Link href="/upgrade">全試験パック（{PRICE_LABEL}・買い切り）</Link> で解放されます。
+          無料体験では「第1回」の最初の{FREE_QUESTION_COUNT}問をお試しいただけます。
+          全{meta.testCount}回のご利用には <Link href="/upgrade">会員登録</Link>
+          （お支払いは一度きり {PRICE_LABEL}）が必要です。
         </div>
       )}
 
