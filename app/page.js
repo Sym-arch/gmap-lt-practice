@@ -6,14 +6,14 @@ export default function LandingPage() {
   return (
     <div>
       <section className="hero">
-        <span className="hero-badge">外資系コンサルティングファーム志望者のために</span>
+        <span className="hero-badge">GMAP(LT)・TG-WEB・玉手箱・SPI3 対応</span>
         <h1>
-          トップファーム内定へ、
+          外資系コンサルティングファーム
           <br />
-          確かな準備を。
+          志望者のためのWebテスト模試
         </h1>
         <p>
-          {SITE_NAME}は、GMAP(LT)・TG-WEB・玉手箱・SPI3に対応した模擬試験プラットフォームです。
+          {SITE_NAME}は、トップファーム内定を目指す方のための模擬試験プラットフォームです。
           コンサルティングファームの出題傾向に合わせた問題と、思考プロセスから理解できる解説で、
           選考突破に必要な力を着実に積み上げます。各試験の冒頭{FREE_QUESTION_COUNT}問は、登録なしでお試しいただけます。
         </p>
