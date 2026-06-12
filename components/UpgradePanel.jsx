@@ -40,7 +40,7 @@ export default function UpgradePanel() {
   if (me.premium) {
     return (
       <div>
-        <div style={{ fontWeight: 800, marginBottom: 10 }}>✓ ご登録済みです</div>
+        <div style={{ fontWeight: 800, marginBottom: 10 }}>ご登録済みです</div>
         <Link href="/" className="btn">試験を選んで開始する</Link>
       </div>
     );

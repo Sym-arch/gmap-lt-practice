@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="56" fill="#197b55"/>
-  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="230">
-    <text x="62" y="338">T</text>
-    <text x="208" y="338">F</text>
-    <text x="332" y="330" transform="rotate(7 400 250)">P</text>
-  </g>
-</svg>

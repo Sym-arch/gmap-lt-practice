@@ -47,28 +47,28 @@ export default function ExamHome({ meta }) {
 
     let badge;
     if (!available) {
-      badge = <span className="lock-badge">準備中</span>;
+      badge = <span className="lock-badge">近日公開</span>;
     } else if (locked) {
-      badge = <span className="lock-badge">🔒 会員限定</span>;
+      badge = <span className="lock-badge">会員限定</span>;
     } else if (h) {
       badge = <span className="score-badge">ベスト {h.best}/{h.total}</span>;
     } else if (!premium && n === 1) {
       badge = <span className="free-badge">無料体験</span>;
     } else {
-      badge = <span className="score-badge none">—</span>;
+      badge = <span className="score-badge none">未受験</span>;
     }
 
     let meta2;
     if (!available) {
-      meta2 = "近日公開";
+      meta2 = "全30問・準備中";
     } else if (!premium && n === 1) {
-      meta2 = `先頭${FREE_QUESTION_COUNT}問を無料で体験できます（高難度選抜問題）`;
+      meta2 = `最初の${FREE_QUESTION_COUNT}問を無料で解けます`;
     } else if (n === 1 && meta.partialFirstTest) {
-      meta2 = `現在${FREE_QUESTION_COUNT}問を先行収録（残りは近日追加）`;
+      meta2 = `現在${FREE_QUESTION_COUNT}問を先行収録`;
     } else if (h) {
-      meta2 = `30問　受験${h.attempts}回 ｜ 前回 ${h.date}`;
+      meta2 = `30問・受験${h.attempts}回・前回 ${h.date}`;
     } else {
-      meta2 = "30問　未受験";
+      meta2 = "30問";
     }
 
     rows.push(
@@ -101,9 +101,8 @@ export default function ExamHome({ meta }) {
 
       {!premium && (
         <div className="notice">
-          無料体験では「第1回」の最初の{FREE_QUESTION_COUNT}問をお試しいただけます。
-          全{meta.testCount}回のご利用には <Link href="/upgrade">会員登録</Link>
-          （お支払いは一度きり {PRICE_LABEL}）が必要です。
+          第1回の最初の{FREE_QUESTION_COUNT}問を無料で体験できます。すべての模試は{" "}
+          <Link href="/upgrade">会員登録</Link>（{PRICE_LABEL}・買い切り）でご利用いただけます。
         </div>
       )}
 
@@ -116,7 +115,7 @@ export default function ExamHome({ meta }) {
           <div className="name">復習モード</div>
           <div className="meta">
             {wrongCount > 0
-              ? "間違えた問題をまとめて解き直す（正解すると一覧から消えます）"
+              ? "間違えた問題を解き直す。正解すると一覧から消えます"
               : "間違えた問題はありません"}
           </div>
         </div>

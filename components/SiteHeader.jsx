@@ -28,7 +28,7 @@ export default function SiteHeader() {
   return (
     <header className="site-header">
       <Link href="/" className="brand">
-        <img src="/icon.svg" alt="" className="brand-img" />
+        <img src="/icon-192.png" alt="" className="brand-img" />
         <span className="brand-name">{SITE_NAME}</span>
       </Link>
       <nav className="header-nav">
