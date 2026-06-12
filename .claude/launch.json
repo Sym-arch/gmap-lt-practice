@@ -2,10 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "gmap-static",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8765"],
-      "port": 8765
+      "name": "consulpass-next",
+      "runtimeExecutable": "C:\\Users\\Tiida\\Downloads\\GMAP_Practice\\scripts\\dev.cmd",
+      "runtimeArgs": [],
+      "port": 3000
+    },
+    {
+      "name": "econ-news-app",
+      "runtimeExecutable": "C:\\Users\\Tiida\\Downloads\\econ-news-app\\venv\\Scripts\\python.exe",
+      "runtimeArgs": ["C:\\Users\\Tiida\\Downloads\\econ-news-app\\app.py"],
+      "port": 5000
     }
   ]
 }

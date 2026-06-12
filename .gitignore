@@ -1,1 +1,15 @@
 .claude/settings.local.json
+
+# dependencies / build
+node_modules/
+.next/
+out/
+
+# env（秘密鍵を含むためコミット禁止）
+.env
+.env.local
+.env*.local
+
+# misc
+.DS_Store
+*.tsbuildinfo

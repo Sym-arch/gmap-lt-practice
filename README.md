@@ -1,73 +1,109 @@
-# GMAP（LT）模擬テスト
+# ConsulPass — 外資コンサル志望者向けWebテスト模試
 
-GMAP（LT）クリティカルシンキング対策の模擬テストアプリです。
-ビルド不要の静的サイト（HTML / CSS / JavaScript のみ）で、PWA としてオフラインでも動作します。
+GMAP(LT)・TG-WEB・玉手箱・SPI3 の模擬試験を提供する有料Webサービス。
+Next.js（Vercel）＋ Supabase（認証・購入記録）＋ Stripe（決済）で構成。
 
-## 収録内容
+## 販売モデル
 
-- 模擬テスト **全10回**（各30問 = 6カテゴリ × 5問）
-- カテゴリ構成（各テスト共通）
-  1. 論理構造の把握（主張・根拠・前提・ピラミッド構造）
-  2. 推論・論証の評価（対偶・必要十分条件・因果と相関・誤謬）
-  3. 数的推論（割合・平均・損益分岐点・期待値など）
-  4. 図表・データ解釈（表の読み取り・比率・増加率）
-  5. 条件整理・推論（順序・対応関係・うそつき・集合）
-  6. 問題解決・意思決定（MECE・仮説思考・原因分析）
+- **無料体験**：各試験タイプの「模試 第1回」の最初の2問（高難度選抜問題）
+- **全試験パック**：¥1,500 買い切りで全試験・全回が解放
+- 問題データはサーバー側で保護されており、無料分以外はブラウザに送信されない
 
-## 機能
+## 収録状況
 
-- 1問ごとに正誤判定＋解説を表示
-- 結果画面でカテゴリ別の正答率を表示
-- **復習モード**：間違えた問題を自動で蓄積し、まとめて解き直し可能（正解すると一覧から消える）
-- 成績履歴（ベストスコア・受験回数）を端末内（localStorage）に保存
-- **オフライン対応**（Service Worker。初回アクセス後はネット接続なしで利用可）
-- スマホ・PC 両対応、ホーム画面に追加してアプリのように使用可能
+| 試験 | 状態 |
+|------|------|
+| GMAP(LT) | 全10回（300問）収録済み |
+| TG-WEB | 第1回に体験2問を先行収録。残りを順次執筆中 |
+| 玉手箱 | 同上 |
+| SPI3 | 同上 |
 
-## ローカルでの確認方法
+## ローカル開発
 
-Service Worker を使うため、簡易サーバーで開くのがおすすめです。
-
-```sh
-# Python がある場合
-python -m http.server 8000
-# → http://localhost:8000 を開く
+```
+npm install
+npm run dev   # http://localhost:3000
 ```
 
-※ `index.html` をダブルクリック（file://）でも問題演習自体は動きますが、オフラインキャッシュは無効になります。
+環境変数なしでも起動でき、その場合は「全員が未ログインの無料ユーザー」として動作します。
 
-## GitHub への登録
+## 本番セットアップ（3ステップ）
 
-```sh
-git init
-git add .
-git commit -m "GMAP(LT) 模擬テストアプリ"
-git branch -M main
-git remote add origin https://github.com/<あなたのユーザー名>/gmap-lt-practice.git
-git push -u origin main
-```
+### 1. Supabase（無料枠でOK）
 
-## Vercel へのデプロイ
+1. https://supabase.com でプロジェクト作成
+2. SQL Editor で `supabase/schema.sql` の内容を実行（purchasesテーブル作成）
+3. Project Settings → API から以下を控える
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`（**秘密。クライアントに出さない**）
+4. Authentication → Providers → Email を有効化
+   - 「Confirm email」をONにすると登録時にメール確認が入る（推奨）
 
-1. [vercel.com](https://vercel.com) に GitHub アカウントでログイン
-2. **Add New → Project** で上記リポジトリを Import
-3. Framework Preset は **Other**（ビルド設定はすべて空のままで OK）
-4. **Deploy** を押すだけで完了
+### 2. Stripe
 
-以後、GitHub に push するたびに自動で再デプロイされます。
+1. https://stripe.com でアカウント作成（本人確認完了後に本番決済可）
+2. 開発者 → APIキー → `STRIPE_SECRET_KEY` を控える
+3. 開発者 → Webhook → エンドポイント追加
+   - URL: `https://<本番ドメイン>/api/stripe-webhook`
+   - イベント: `checkout.session.completed`
+   - 発行された署名シークレットを `STRIPE_WEBHOOK_SECRET` に
+   - ※Webhookは保険。決済完了ページでも購入は即時反映される
 
-## 問題データの編集
+### 3. Vercel
 
-問題は `data/test01.js` 〜 `data/test10.js` にあります。1問の形式：
+1. プロジェクトの Settings → Environment Variables に `.env.example` の全変数を設定
+2. Framework Preset は `vercel.json` により自動で Next.js になる
+3. push すれば自動デプロイ
+
+### 運営者アカウント
+
+`PREMIUM_EMAILS` に自分のメールアドレスを設定すると、そのアカウントは購入なしで全問アクセスできます（動作確認・自分の学習用）。
+
+## 問題データの追加・編集
+
+問題は `lib/exams/<試験ID>/testNN.js` にあります。
 
 ```js
-{
-  category: "quantitative",   // structure / reasoning / quantitative / data / puzzle / problem
-  q: "問題文",
-  table: { head: ["列1", "列2"], rows: [["A", 100]] },  // 任意（表が必要な問題のみ）
-  choices: ["選択肢ア", "イ", "ウ", "エ"],
-  answer: 1,                  // 正解のインデックス（0〜3）
-  exp: "解説",
-}
+const test = {
+  id: 1,                      // 第N回
+  title: "模擬テスト 第1回",
+  partial: true,              // 一部のみ収録の場合（全問揃ったら削除）
+  questions: [
+    {
+      category: "keisu",      // lib/examMeta.js のカテゴリキー
+      q: "問題文",
+      table: { head: [...], rows: [[...]] },  // 表が必要な場合のみ
+      choices: ["ア", "イ", "ウ", "エ"],       // 4択
+      answer: 0,              // 正解のindex（0〜3）
+      exp: "解説",
+    },
+  ],
+};
+export default test;
 ```
 
-問題を変更したら `sw.js` の `CACHE_NAME` のバージョン（例: `gmap-lt-v1` → `v2`）を上げると、利用者側のキャッシュが確実に更新されます。
+新しい回を追加したら `lib/examData.js` に import を1行足し、
+試験の `availableTests`（`lib/examMeta.js`）を増やしてください。
+
+## アーキテクチャ
+
+```
+app/
+  page.js                    ランディングページ
+  exams/[examId]/            試験トップ（模試一覧・復習モード）
+  exams/[examId]/tests/[n]/  受験画面
+  exams/[examId]/review/     復習モード
+  login/ upgrade/            認証・購入ページ
+  api/questions/             問題配信API（無料/有料ゲートの本体）
+  api/checkout/              Stripe Checkoutセッション作成
+  api/stripe-webhook/        決済完了Webhook
+  api/me/                    ログイン・購入状態
+lib/
+  examMeta.js                試験メタ情報（クライアント公開可）
+  examData.js                問題データ集約（サーバー専用）
+  exams/<examId>/testNN.js   問題データ本体
+supabase/schema.sql          DBスキーマ（purchasesテーブル）
+```
+
+成績・復習リストは現状ブラウザのlocalStorageに保存されます（端末ごと）。
