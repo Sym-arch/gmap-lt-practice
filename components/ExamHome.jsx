@@ -10,7 +10,7 @@ import {
   wrongKey,
   historyKey,
 } from "@/components/storage";
-import { FREE_QUESTION_COUNT, PRICE_LABEL } from "@/lib/site";
+import { FREE_QUESTION_COUNT } from "@/lib/site";
 
 export default function ExamHome({ meta }) {
   const router = useRouter();
@@ -102,10 +102,16 @@ export default function ExamHome({ meta }) {
       <h1>{meta.name} 模擬試験</h1>
       <div className="subtitle">{meta.desc}</div>
 
-      {!premium && (
-        <div className="notice">
-          第1回の最初の{FREE_QUESTION_COUNT}問を無料で体験できます。すべての模試は{" "}
-          <Link href="/upgrade">会員登録</Link>（{PRICE_LABEL}・買い切り）でご利用いただけます。
+      {meta.firms && meta.firms.length > 0 && (
+        <div className="firms-box">
+          <div className="firms-title">この試験を採用している企業</div>
+          <div className="firms-list">
+            {meta.firms.map((f) => (
+              <span className="firm-chip" key={f}>
+                {f}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 

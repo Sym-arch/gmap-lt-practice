@@ -55,6 +55,50 @@ export function recordResult(examId, testId, score, total) {
   saveJSON(historyKey(examId), h);
 }
 
+/* ---------- 学習統計（解いた問題数の可視化） ---------- */
+const STATS_KEY = "stats:v1";
+
+export function getStats() {
+  return loadJSON(STATS_KEY, { answered: 0, correct: 0, days: {}, byExam: {} });
+}
+
+/* 1問解くたびに呼ぶ。累積の解答数・正答数・日別・試験別を記録する。 */
+export function recordAnswer(examId, correct) {
+  const s = getStats();
+  s.answered = (s.answered || 0) + 1;
+  s.correct = (s.correct || 0) + (correct ? 1 : 0);
+
+  const today = new Date().toISOString().slice(0, 10);
+  s.days = s.days || {};
+  s.days[today] = (s.days[today] || 0) + 1;
+
+  s.byExam = s.byExam || {};
+  const ex = s.byExam[examId] || { answered: 0, correct: 0 };
+  ex.answered += 1;
+  if (correct) ex.correct += 1;
+  s.byExam[examId] = ex;
+
+  saveJSON(STATS_KEY, s);
+}
+
+/* 連続学習日数（今日からさかのぼって連続して学習した日数） */
+export function getStreak() {
+  const s = getStats();
+  const days = s.days || {};
+  let streak = 0;
+  const d = new Date();
+  for (;;) {
+    const key = d.toISOString().slice(0, 10);
+    if (days[key]) {
+      streak += 1;
+      d.setDate(d.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
 /* 旧静的版（GMAP単体アプリ）のデータを新キーへ引き継ぐ */
 export function migrateLegacyGmapData() {
   try {

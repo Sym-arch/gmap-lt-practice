@@ -8,6 +8,7 @@ import {
   removeWrong,
   getWrongMap,
   recordResult,
+  recordAnswer,
 } from "@/components/storage";
 import { PRICE_LABEL } from "@/lib/site";
 
@@ -27,6 +28,7 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
   const [pos, setPos] = useState(0);
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [paywall, setPaywall] = useState(false);
   const startedAt = useRef(Date.now());
   const nextBtnRef = useRef(null);
 
@@ -102,6 +104,7 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
     const correct = idx === item.q.answer;
     setSelected(idx);
     setResults((r) => [...r, { item, selected: idx, correct }]);
+    recordAnswer(examId, correct);
     if (correct) {
       if (mode === "review") removeWrong(examId, item.t, item.i);
     } else {
@@ -110,14 +113,15 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
   }
 
   function next() {
-    setSelected(null);
     if (pos + 1 < items.length) {
+      setSelected(null);
       setPos(pos + 1);
       window.scrollTo(0, 0);
     } else if (access === "trial") {
-      setState("trial-end");
-      window.scrollTo(0, 0);
+      // 無料体験の最後の問題を解き終えた時点で、3問目以降を会員登録の壁でブロック
+      setPaywall(true);
     } else {
+      setSelected(null);
       if (mode === "test") {
         const score = results.filter((r) => r.correct).length;
         recordResult(examId, testId, score, items.length);
@@ -173,28 +177,6 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
       <div className="card">
         <div className="error-box">読み込みに失敗しました。再読み込みしてください。</div>
         <Link href={`/exams/${examId}`} className="link-btn">試験トップに戻る</Link>
-      </div>
-    );
-  }
-
-  if (state === "trial-end") {
-    const score = results.filter((r) => r.correct).length;
-    return (
-      <div className="card trial-end">
-        <div className="big">無料体験はここまでです</div>
-        <div className="result-score">{score} / {results.length}</div>
-        <p>
-          いま解いた{results.length}問は、本番想定より難度を上げた選抜問題です。
-          <br />
-          会員登録すると、{examName}の続きに加え、
-          GMAP(LT)・TG-WEB・玉手箱・SPI3 すべての模試・解説・復習モードをご利用いただけます。
-        </p>
-        <Link href="/upgrade" className="btn block">
-          会員登録する
-        </Link>
-        <Link href={`/exams/${examId}`} className="link-btn">
-          試験トップに戻る
-        </Link>
       </div>
     );
   }
@@ -284,6 +266,24 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
       <Link href={`/exams/${examId}`} className="link-btn">
         中断して試験トップに戻る
       </Link>
+
+      {paywall && (
+        <div className="paywall">
+          <div className="paywall-modal">
+            <div className="paywall-title">会員登録する</div>
+            <p className="paywall-text">
+              3問目以降は会員限定です。会員登録すると、{examName}の続きに加え、
+              GMAP(LT)・TG-WEB・玉手箱・SPI3 すべての模試・解説・復習モードをご利用いただけます。
+            </p>
+            <Link href="/upgrade" className="btn block">
+              会員登録する（{PRICE_LABEL}・買い切り）
+            </Link>
+            <Link href={`/exams/${examId}`} className="link-btn">
+              試験トップに戻る
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 

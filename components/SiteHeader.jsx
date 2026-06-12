@@ -25,6 +25,8 @@ export default function SiteHeader() {
     router.refresh();
   }
 
+  const initial = me?.email ? me.email.trim().charAt(0).toUpperCase() : "?";
+
   return (
     <header className="site-header">
       <Link href="/" className="brand">
@@ -32,21 +34,26 @@ export default function SiteHeader() {
         <span className="brand-name">{SITE_NAME}</span>
       </Link>
       <nav className="header-nav">
-        {me?.premium ? (
-          <span className="premium-chip">プレミアム会員</span>
-        ) : (
-          <Link href="/upgrade" className="header-upgrade">
-            会員登録
-          </Link>
-        )}
         {me?.loggedIn ? (
-          <button className="header-link" onClick={logout}>
-            ログアウト
-          </button>
+          <>
+            {!me.premium && (
+              <Link href="/upgrade" className="header-upgrade">
+                会員登録
+              </Link>
+            )}
+            <Link href="/profile" className="profile-avatar" title="マイページ">
+              {initial}
+            </Link>
+          </>
         ) : (
-          <Link href="/login" className="header-link">
-            ログイン
-          </Link>
+          <>
+            <Link href="/upgrade" className="header-upgrade">
+              会員登録
+            </Link>
+            <Link href="/login" className="header-link">
+              ログイン
+            </Link>
+          </>
         )}
       </nav>
     </header>
