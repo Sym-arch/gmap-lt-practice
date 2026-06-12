@@ -93,6 +93,9 @@ export default function ExamHome({ meta }) {
 
   return (
     <div>
+      <Link href="/" className="back-link">
+        ← 試験一覧に戻る
+      </Link>
       <div className="exam-header" style={{ "--accent": meta.accent }}>
         <span className="exam-chip">{meta.tagline}</span>
       </div>

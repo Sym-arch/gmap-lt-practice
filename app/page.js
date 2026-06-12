@@ -18,7 +18,7 @@ export default function LandingPage() {
           選考突破に必要な力を着実に積み上げます。各試験の冒頭{FREE_QUESTION_COUNT}問は、登録なしでお試しいただけます。
         </p>
         <div className="hero-cta">
-          <a href="#exams" className="btn">無料で試してみる</a>
+          <Link href="/exams/gmap" className="btn">無料で試してみる</Link>
           <Link href="/upgrade" className="btn secondary">
             会員登録する
           </Link>

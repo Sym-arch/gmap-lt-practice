@@ -65,7 +65,7 @@ export default function UpgradePanel() {
         {busy ? "お手続きページへ移動中…" : "会員登録を完了する"}
       </button>
       <div style={{ fontSize: 12, opacity: 0.8, marginTop: 10 }}>
-        Stripeの安全な決済ページに移動します。
+        Stripeの決済ページに移動します。
       </div>
       {error && (
         <div className="error-box" style={{ marginTop: 12, color: "#fff", background: "rgba(255,255,255,0.15)" }}>

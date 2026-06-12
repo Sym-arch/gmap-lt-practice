@@ -260,6 +260,13 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 .section-title { font-size: 18px; font-weight: 800; margin: 28px 0 12px; }
 
 /* ---------- exam home ---------- */
+.back-link {
+  display: inline-block;
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.back-link:hover { color: var(--ink); }
 .exam-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
 .exam-chip {
   font-size: 12px; font-weight: 700; color: #f4f8f5;
