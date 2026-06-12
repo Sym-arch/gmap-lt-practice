@@ -1,7 +1,7 @@
 /* 全問題データの整合性チェック（問数・カテゴリ・answer範囲・解説の有無） */
 const exams = {
   gmap: { files: 10, cats: ["structure", "reasoning", "quantitative", "data", "puzzle", "problem"] },
-  tgweb: { files: 2, cats: ["keisu", "gengo", "eigo"] },
+  tgweb: { files: 3, cats: ["keisu", "gengo", "eigo"] },
   tamatebako: { files: 1, cats: ["keisu", "gengo", "eigo"] },
   spi3: { files: 1, cats: ["higengo", "gengo", "kozo", "eigo"] },
 };
