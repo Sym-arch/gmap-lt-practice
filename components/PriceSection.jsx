@@ -30,7 +30,7 @@ export default function PriceSection() {
         <li>全問解説つき・復習モード・成績記録</li>
         <li>今後追加される模試・問題もそのまま利用可能</li>
       </ul>
-      <Link href="/upgrade" className="btn">会員登録する</Link>
+      <Link href="/signup" className="btn">会員登録する</Link>
     </div>
   );
 }

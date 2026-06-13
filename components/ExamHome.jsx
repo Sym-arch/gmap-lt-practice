@@ -78,7 +78,7 @@ export default function ExamHome({ meta }) {
         disabled={!available}
         onClick={() => {
           if (!available) return;
-          if (locked) router.push("/upgrade");
+          if (locked) router.push("/signup");
           else router.push(`/exams/${meta.id}/tests/${n}`);
         }}
       >

@@ -51,7 +51,7 @@ export default function LandingHero() {
       </p>
       <div className="hero-cta">
         <Link href="/exams/gmap" className="btn">無料で試してみる</Link>
-        <Link href="/upgrade" className="btn secondary">会員登録する</Link>
+        <Link href="/signup" className="btn secondary">会員登録する</Link>
       </div>
     </section>
   );

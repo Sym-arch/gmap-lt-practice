@@ -42,7 +42,7 @@ export default function SiteHeader() {
           </>
         ) : (
           <>
-            <Link href="/upgrade" className="header-upgrade">
+            <Link href="/signup" className="header-upgrade">
               会員登録
             </Link>
             <Link href="/login" className="header-link">

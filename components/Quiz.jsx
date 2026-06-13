@@ -179,7 +179,7 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
           会員登録すると、{examName}を含む4試験タイプの模擬試験すべてをご利用いただけます
           （お支払いは一度きり {PRICE_LABEL}）。
         </p>
-        <Link href="/upgrade" className="btn block">
+        <Link href="/signup" className="btn block">
           会員登録について見る
         </Link>
         <Link href={`/exams/${examId}`} className="link-btn">
@@ -304,7 +304,7 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
               3問目以降は会員限定です。会員登録すると、{examName}の続きに加え、
               GMAP(LT)・TG-WEB・玉手箱・SPI3 すべての模試・解説・復習モードをご利用いただけます。
             </p>
-            <Link href="/upgrade" className="btn block">
+            <Link href="/signup" className="btn block">
               会員登録する（{PRICE_LABEL}・買い切り）
             </Link>
             <Link href={`/exams/${examId}`} className="link-btn">
