@@ -32,7 +32,17 @@ export default function LoginForm() {
         router.push(next);
         router.refresh();
       } else {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        // 確認メールのリンクから戻る先を、現在のサイトURLに固定する
+        // （Supabase側の Site URL が localhost のままでも、本番ドメインに戻ってこられる）
+        const origin =
+          typeof window !== "undefined" ? window.location.origin : "";
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${origin}/login?next=${encodeURIComponent(next)}`,
+          },
+        });
         if (error) throw error;
         if (data.session) {
           router.push(next);
