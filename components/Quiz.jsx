@@ -37,8 +37,21 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
     async function load() {
       try {
         if (mode === "review") {
-          const map = getWrongMap(examId);
-          const wrongItems = Object.values(map).map((w) => ({ t: w.t, i: w.i }));
+          // 1) DB側の復習リストを優先（ログイン済みなら）。失敗・空の場合は localStorage を使う
+          let wrongItems = [];
+          try {
+            const r = await fetch(`/api/progress/wrongs?exam=${examId}`);
+            const d = await r.json();
+            if (d.ok && Array.isArray(d.items) && d.items.length > 0) {
+              wrongItems = d.items;
+            }
+          } catch {
+            /* DB取得失敗時は localStorage にフォールバック */
+          }
+          if (wrongItems.length === 0) {
+            const map = getWrongMap(examId);
+            wrongItems = Object.values(map).map((w) => ({ t: w.t, i: w.i }));
+          }
           if (wrongItems.length === 0) {
             if (!cancelled) setState("empty");
             return;
@@ -110,6 +123,17 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
     } else {
       addWrong(examId, item.t, item.i);
     }
+    // ログイン中ユーザーはDBにも同期（失敗してもUIは継続）
+    fetch("/api/progress/answer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        examId,
+        testId: item.t,
+        qIndex: item.i,
+        correct,
+      }),
+    }).catch(() => {});
   }
 
   function next() {
@@ -125,6 +149,11 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
       if (mode === "test") {
         const score = results.filter((r) => r.correct).length;
         recordResult(examId, testId, score, items.length);
+        fetch("/api/progress/result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ examId, testId, score, total: items.length }),
+        }).catch(() => {});
       }
       setState("result");
       window.scrollTo(0, 0);

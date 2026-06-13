@@ -36,11 +36,6 @@ export default function SiteHeader() {
       <nav className="header-nav">
         {me?.loggedIn ? (
           <>
-            {!me.premium && (
-              <Link href="/upgrade" className="header-upgrade">
-                会員登録
-              </Link>
-            )}
             <Link href="/profile" className="profile-avatar" title="マイページ">
               {initial}
             </Link>

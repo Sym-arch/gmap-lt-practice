@@ -10,19 +10,23 @@ import { EXAMS } from "@/lib/examMeta";
 export default function ProfilePanel() {
   const router = useRouter();
   const [me, setMe] = useState(null);
-  const [stats, setStats] = useState(null);
-  const [streak, setStreak] = useState(0);
+  const [summary, setSummary] = useState(null);
 
   useEffect(() => {
-    setStats(getStats());
-    setStreak(getStreak());
     fetch("/api/me")
       .then((r) => r.json())
       .then(setMe)
       .catch(() => setMe({ loggedIn: false, premium: false }));
+    fetch("/api/progress/summary")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.ok) setSummary(d);
+        else setSummary({ ok: false });
+      })
+      .catch(() => setSummary({ ok: false }));
   }, []);
 
-  if (!stats || !me) {
+  if (!me || !summary) {
     return <div className="card">読み込み中…</div>;
   }
 
@@ -38,10 +42,20 @@ export default function ProfilePanel() {
     );
   }
 
-  const accuracy =
-    stats.answered > 0 ? Math.round((stats.correct / stats.answered) * 100) : 0;
+  // DBから取得できれば優先、ダメなら localStorage（オフライン互換）
+  const useDb = summary.ok === true;
+  const local = !useDb ? getStats() : null;
+  const totals = useDb
+    ? summary.totals
+    : { answered: local.answered || 0, correct: local.correct || 0 };
+  const daysMap = useDb ? summary.days : local.days || {};
+  const byExam = useDb ? summary.byExam : local.byExam || {};
 
-  // 直近7日間の学習量（棒グラフ）
+  const streak = computeStreak(daysMap);
+  const accuracy =
+    totals.answered > 0 ? Math.round((totals.correct / totals.answered) * 100) : 0;
+
+  // 直近7日間の学習量
   const last7 = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
@@ -49,7 +63,7 @@ export default function ProfilePanel() {
     const key = d.toISOString().slice(0, 10);
     last7.push({
       label: `${d.getMonth() + 1}/${d.getDate()}`,
-      count: (stats.days && stats.days[key]) || 0,
+      count: daysMap[key] || 0,
     });
   }
   const maxDay = Math.max(1, ...last7.map((d) => d.count));
@@ -69,7 +83,7 @@ export default function ProfilePanel() {
       <h2 className="section-title">学習状況</h2>
       <div className="stat-grid">
         <div className="stat-box">
-          <div className="stat-num">{stats.answered}</div>
+          <div className="stat-num">{totals.answered}</div>
           <div className="stat-label">解いた問題数</div>
         </div>
         <div className="stat-box">
@@ -77,7 +91,10 @@ export default function ProfilePanel() {
           <div className="stat-label">通算正答率</div>
         </div>
         <div className="stat-box">
-          <div className="stat-num">{streak}<span className="stat-unit">日</span></div>
+          <div className="stat-num">
+            {streak}
+            <span className="stat-unit">日</span>
+          </div>
           <div className="stat-label">連続学習</div>
         </div>
       </div>
@@ -103,10 +120,7 @@ export default function ProfilePanel() {
       <div className="card">
         <h2>試験別の学習量</h2>
         {EXAMS.map((ex) => {
-          const e = (stats.byExam && stats.byExam[ex.id]) || {
-            answered: 0,
-            correct: 0,
-          };
+          const e = byExam[ex.id] || { answered: 0, correct: 0 };
           const acc =
             e.answered > 0 ? Math.round((e.correct / e.answered) * 100) : 0;
           return (
@@ -129,12 +143,43 @@ export default function ProfilePanel() {
             </div>
           );
         })}
-        {stats.answered === 0 && (
+        {totals.answered === 0 && (
           <div className="subtitle" style={{ marginTop: 10 }}>
             まだ問題を解いていません。試験に挑戦すると、ここに学習の記録が表示されます。
           </div>
         )}
       </div>
+
+      {useDb && summary.byTest && Object.keys(summary.byTest).length > 0 && (
+        <div className="card">
+          <h2>受験記録</h2>
+          {EXAMS.map((ex) => {
+            const tests = summary.byTest[ex.id];
+            if (!tests) return null;
+            const ids = Object.keys(tests)
+              .map((n) => parseInt(n, 10))
+              .sort((a, b) => a - b);
+            return (
+              <div key={ex.id} style={{ marginBottom: 14 }}>
+                <div className="cat-line" style={{ marginBottom: 4 }}>
+                  <span>{ex.name}</span>
+                </div>
+                {ids.map((n) => {
+                  const t = tests[n];
+                  return (
+                    <div className="record-row" key={n}>
+                      <span>第{n}回</span>
+                      <span>
+                        ベスト {t.best}/{t.total}・受験{t.attempts}回
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <Link href="/" className="btn secondary block">
         試験一覧へ
@@ -152,6 +197,21 @@ export default function ProfilePanel() {
     router.push("/");
     router.refresh();
   }
+}
+
+function computeStreak(daysMap) {
+  let streak = 0;
+  const d = new Date();
+  for (;;) {
+    const key = d.toISOString().slice(0, 10);
+    if (daysMap[key]) {
+      streak += 1;
+      d.setDate(d.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
 }
 
 function initial(email) {
