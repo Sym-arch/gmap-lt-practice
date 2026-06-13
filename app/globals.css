@@ -647,6 +647,76 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 }
 .field input:focus { outline: none; border-color: var(--brand); }
 
+/* Googleログインボタン */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--card);
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+  margin-bottom: 14px;
+}
+.google-btn:hover:not(:disabled) { border-color: var(--ink-soft); background: var(--brand-soft); }
+.google-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.auth-divider {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin: 14px 0 16px;
+  position: relative;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 38%;
+  height: 1px;
+  background: var(--line);
+}
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
+.auth-divider span { background: var(--card); padding: 0 8px; position: relative; }
+
+.auth-foot {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 18px;
+  line-height: 1.7;
+}
+
+/* 会員登録パネルのメール入力欄 */
+.upgrade-email-field { text-align: left; margin-bottom: 14px; }
+.upgrade-email-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 6px;
+}
+.upgrade-email-field input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 9px;
+  padding: 11px 12px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--ink);
+}
+.upgrade-email-field input:focus { outline: none; border-color: #fff; }
+
 /* ---------- スマホ（〜480px）基準の調整 ---------- */
 @media (max-width: 480px) {
   .container { padding: 16px 14px 48px; }

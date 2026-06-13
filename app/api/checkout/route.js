@@ -5,7 +5,9 @@ import { PRICE_YEN, SITE_NAME } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
-/* POST /api/checkout — Stripe Checkoutセッションを作成して決済ページURLを返す */
+/* POST /api/checkout — Stripe Checkoutセッションを作成して決済ページURLを返す
+   未ログインユーザーも利用可能。body の email を Stripe Checkout に渡して、
+   決済成功時の Webhook（または成功ページ）で Supabase アカウントを自動作成する。 */
 export async function POST(req) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
@@ -15,12 +17,31 @@ export async function POST(req) {
     );
   }
 
-  const { user, premium } = await getAccess();
-  if (!user) {
-    return NextResponse.json({ error: "login_required" }, { status: 401 });
+  let body = {};
+  try {
+    body = await req.json();
+  } catch {
+    /* body 無しでも進める（既存ログインユーザー用） */
   }
+
+  const { user, premium } = await getAccess();
   if (premium) {
     return NextResponse.json({ error: "already_purchased" }, { status: 409 });
+  }
+
+  // ログイン済みなら本人のメールを優先、未ログインなら入力されたメールを使う
+  const email = (user && user.email) || (typeof body.email === "string" ? body.email.trim() : "");
+  if (!email) {
+    return NextResponse.json(
+      { error: "メールアドレスを入力してください。" },
+      { status: 400 }
+    );
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json(
+      { error: "メールアドレスの形式が正しくありません。" },
+      { status: 400 }
+    );
   }
 
   const stripe = new Stripe(secretKey);
@@ -44,9 +65,12 @@ export async function POST(req) {
         quantity: 1,
       },
     ],
-    customer_email: user.email || undefined,
-    client_reference_id: user.id,
-    metadata: { user_id: user.id },
+    customer_email: email,
+    client_reference_id: user ? user.id : undefined,
+    metadata: {
+      email,
+      user_id: user ? user.id : "",
+    },
     success_url: `${origin}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/upgrade`,
   });

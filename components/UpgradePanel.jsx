@@ -7,6 +7,7 @@ export default function UpgradePanel() {
   const [me, setMe] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     fetch("/api/me")
@@ -19,13 +20,17 @@ export default function UpgradePanel() {
     setBusy(true);
     setError("");
     try {
-      const res = await fetch("/api/checkout", { method: "POST" });
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email || undefined }),
+      });
       const data = await res.json();
       if (res.ok && data.url) {
         window.location.href = data.url;
         return;
       }
-      setError(data.error === "login_required" ? "ログインが必要です。" : data.error || "エラーが発生しました。");
+      setError(data.error || "エラーが発生しました。");
     } catch {
       setError("通信エラーが発生しました。");
     } finally {
@@ -46,29 +51,32 @@ export default function UpgradePanel() {
     );
   }
 
-  if (!me.loggedIn) {
-    return (
-      <div>
-        <Link href="/login?next=/upgrade" className="btn">
-          アカウントを作成して進む
-        </Link>
-        <div style={{ fontSize: 12, opacity: 0.8, marginTop: 10 }}>
-          ご登録内容をアカウントに紐づけるため、先にアカウント作成（無料）をお願いします。
-        </div>
-      </div>
-    );
-  }
-
+  // 未ログイン or ログイン済みだが未購入 → どちらもメールアドレス入力＋決済へ
   return (
-    <div>
-      <button className="btn" onClick={buy} disabled={busy}>
-        {busy ? "お手続きページへ移動中…" : "会員登録を完了する"}
+    <div className="upgrade-form">
+      {!me.loggedIn && (
+        <div className="upgrade-email-field">
+          <label htmlFor="upgrade-email">メールアドレス</label>
+          <input
+            id="upgrade-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="your-name@example.com"
+            autoComplete="email"
+            required
+          />
+        </div>
+      )}
+      <button className="btn" onClick={buy} disabled={busy || (!me.loggedIn && !email)}>
+        {busy ? "お手続きページへ移動中…" : "決済に進む"}
       </button>
-      <div style={{ fontSize: 12, opacity: 0.8, marginTop: 10 }}>
-        Stripeの決済ページに移動します。
+      <div style={{ fontSize: 12, opacity: 0.85, marginTop: 10, lineHeight: 1.6 }}>
+        Stripeの決済ページに移動します。決済完了後、ご登録のメールアドレスに
+        ログイン用パスワードの設定リンクをお送りします。
       </div>
       {error && (
-        <div className="error-box" style={{ marginTop: 12, color: "#fff", background: "rgba(255,255,255,0.15)" }}>
+        <div className="error-box" style={{ marginTop: 12, color: "#fff", background: "rgba(255,255,255,0.18)" }}>
           {error}
         </div>
       )}
