@@ -23,7 +23,6 @@ export default function SignupForm() {
   const [form, setForm] = useState({
     last_name: "",
     first_name: "",
-    furigana: "",
     university: "",
     email: "",
     email2: "",
@@ -38,7 +37,6 @@ export default function SignupForm() {
   function validate() {
     if (!form.last_name.trim()) return "姓を入力してください。";
     if (!form.first_name.trim()) return "名を入力してください。";
-    if (!form.furigana.trim()) return "フリガナを入力してください。";
     if (!form.university.trim()) return "ご所属の大学を入力してください。";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       return "メールアドレスの形式が正しくありません。";
@@ -67,7 +65,6 @@ export default function SignupForm() {
         body: JSON.stringify({
           last_name: form.last_name.trim(),
           first_name: form.first_name.trim(),
-          furigana: form.furigana.trim(),
           university: form.university.trim(),
           email: form.email.trim(),
         }),
@@ -228,15 +225,6 @@ export default function SignupForm() {
               placeholder="例：太郎"
             />
           </div>
-        </div>
-        <div className="field">
-          <label>フリガナ（カタカナ）</label>
-          <input
-            value={form.furigana}
-            onChange={(e) => setField("furigana", e.target.value)}
-            required
-            placeholder="例：トップ ファームパス"
-          />
         </div>
         <div className="field">
           <label>ご所属の大学</label>

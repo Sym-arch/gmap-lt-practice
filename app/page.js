@@ -1,7 +1,6 @@
-import Link from "next/link";
 import LandingHero from "@/components/LandingHero";
 import PriceSection from "@/components/PriceSection";
-import { EXAMS } from "@/lib/examMeta";
+import ExamGrid from "@/components/ExamGrid";
 import { SITE_NAME } from "@/lib/site";
 
 export default function LandingPage() {
@@ -10,24 +9,7 @@ export default function LandingPage() {
       <LandingHero />
 
       <h2 className="section-title" id="exams">試験を選ぶ</h2>
-      <div className="exam-grid">
-        {EXAMS.map((exam) => (
-          <Link
-            key={exam.id}
-            href={`/exams/${exam.id}`}
-            className="exam-card"
-            style={{ "--accent": exam.accent }}
-          >
-            <span className="exam-tagline">{exam.tagline}</span>
-            <span className="exam-name">{exam.name}</span>
-            <span className="exam-desc">{exam.desc}</span>
-            <span className="exam-foot">
-              <span>模擬試験 全{exam.testCount}回</span>
-              <span className="exam-free">無料体験あり</span>
-            </span>
-          </Link>
-        ))}
-      </div>
+      <ExamGrid />
 
       <h2 className="section-title">{SITE_NAME}の特徴</h2>
       <div className="feature-grid">

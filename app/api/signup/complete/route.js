@@ -93,7 +93,6 @@ export async function POST(req) {
       last_name: md.last_name || "",
       first_name: md.first_name || "",
       full_name: `${md.last_name || ""} ${md.first_name || ""}`.trim(),
-      furigana: md.furigana || "",
       university: md.university || "",
     },
   });

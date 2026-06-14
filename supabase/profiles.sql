@@ -11,7 +11,6 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   last_name text not null default '',
   first_name text not null default '',
-  furigana text not null default '',
   university text not null default '',
   email text not null,
   created_at timestamptz not null default now()
@@ -49,12 +48,11 @@ as $$
 begin
   if new.email_confirmed_at is not null
      and (old.email_confirmed_at is null or old.email_confirmed_at <> new.email_confirmed_at) then
-    insert into public.profiles (id, last_name, first_name, furigana, university, email)
+    insert into public.profiles (id, last_name, first_name, university, email)
     values (
       new.id,
       coalesce(new.raw_user_meta_data ->> 'last_name', ''),
       coalesce(new.raw_user_meta_data ->> 'first_name', ''),
-      coalesce(new.raw_user_meta_data ->> 'furigana', ''),
       coalesce(new.raw_user_meta_data ->> 'university', ''),
       new.email
     )
