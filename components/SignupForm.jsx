@@ -21,7 +21,8 @@ export default function SignupForm() {
   const [clientSecret, setClientSecret] = useState(null);
 
   const [form, setForm] = useState({
-    full_name: "",
+    last_name: "",
+    first_name: "",
     furigana: "",
     university: "",
     email: "",
@@ -35,7 +36,8 @@ export default function SignupForm() {
   }
 
   function validate() {
-    if (!form.full_name.trim()) return "氏名を入力してください。";
+    if (!form.last_name.trim()) return "姓を入力してください。";
+    if (!form.first_name.trim()) return "名を入力してください。";
     if (!form.furigana.trim()) return "フリガナを入力してください。";
     if (!form.university.trim()) return "ご所属の大学を入力してください。";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
@@ -63,7 +65,8 @@ export default function SignupForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          full_name: form.full_name.trim(),
+          last_name: form.last_name.trim(),
+          first_name: form.first_name.trim(),
           furigana: form.furigana.trim(),
           university: form.university.trim(),
           email: form.email.trim(),
@@ -204,14 +207,27 @@ export default function SignupForm() {
           メール認証完了後、これらの情報をご登録のアカウントに紐づけます。
         </div>
 
-        <div className="field">
-          <label>氏名（漢字）</label>
-          <input
-            value={form.full_name}
-            onChange={(e) => setField("full_name", e.target.value)}
-            required
-            autoComplete="name"
-          />
+        <div className="field-row">
+          <div className="field">
+            <label>姓（漢字）</label>
+            <input
+              value={form.last_name}
+              onChange={(e) => setField("last_name", e.target.value)}
+              required
+              autoComplete="family-name"
+              placeholder="例：山田"
+            />
+          </div>
+          <div className="field">
+            <label>名（漢字）</label>
+            <input
+              value={form.first_name}
+              onChange={(e) => setField("first_name", e.target.value)}
+              required
+              autoComplete="given-name"
+              placeholder="例：太郎"
+            />
+          </div>
         </div>
         <div className="field">
           <label>フリガナ（カタカナ）</label>

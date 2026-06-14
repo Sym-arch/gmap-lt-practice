@@ -658,6 +658,10 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 }
 .field input:focus { outline: none; border-color: var(--brand); }
 
+/* 姓・名の横並び */
+.field-row { display: flex; gap: 12px; }
+.field-row .field { flex: 1; }
+
 /* Googleログインボタン */
 .google-btn {
   display: flex;

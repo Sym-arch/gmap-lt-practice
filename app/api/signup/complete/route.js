@@ -90,7 +90,9 @@ export async function POST(req) {
     password,
     email_confirm: false,
     user_metadata: {
-      full_name: md.full_name || "",
+      last_name: md.last_name || "",
+      first_name: md.first_name || "",
+      full_name: `${md.last_name || ""} ${md.first_name || ""}`.trim(),
       furigana: md.furigana || "",
       university: md.university || "",
     },

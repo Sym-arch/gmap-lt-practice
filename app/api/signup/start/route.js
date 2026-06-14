@@ -25,12 +25,13 @@ export async function POST(req) {
     return NextResponse.json({ error: "不正なリクエストです。" }, { status: 400 });
   }
 
-  const full_name = String(body.full_name || "").trim();
+  const last_name = String(body.last_name || "").trim();
+  const first_name = String(body.first_name || "").trim();
   const furigana = String(body.furigana || "").trim();
   const university = String(body.university || "").trim();
   const email = String(body.email || "").trim();
 
-  if (!full_name || !furigana || !university || !email) {
+  if (!last_name || !first_name || !furigana || !university || !email) {
     return NextResponse.json({ error: "必須項目が未入力です。" }, { status: 400 });
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -83,7 +84,8 @@ export async function POST(req) {
     },
     metadata: {
       email,
-      full_name,
+      last_name,
+      first_name,
       furigana,
       university,
     },

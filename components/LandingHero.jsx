@@ -14,25 +14,9 @@ export default function LandingHero() {
       .catch(() => setMe({ loggedIn: false, premium: false }));
   }, []);
 
-  // ログイン済みユーザーには CTA を出さない（既に会員 or 無料体験中）
+  // ログイン済みユーザーにはヒーローを出さず、「試験を選ぶ」セクションから始める
   if (me?.loggedIn) {
-    return (
-      <section className="hero">
-        <span className="hero-badge">GMAP(LT)・TG-WEB・玉手箱・SPI3 対応</span>
-        <h1>
-          {me.premium ? "今日も学習を始めましょう。" : "おかえりなさい。"}
-        </h1>
-        <p>
-          {me.premium
-            ? "前回の続きから取り組むのもよし、苦手分野の復習もおすすめです。下の試験一覧からお選びください。"
-            : "下の試験一覧からお選びください。"}
-        </p>
-        <div className="hero-cta">
-          <a href="#exams" className="btn">試験を選ぶ</a>
-          <Link href="/profile" className="btn secondary">マイページ</Link>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   // 未ログイン（または取得中）の通常表示
