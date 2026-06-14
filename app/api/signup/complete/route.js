@@ -77,18 +77,12 @@ export async function POST(req) {
     );
   }
 
-  // ユーザー作成（email_confirm: false → Supabaseが認証メールを送信する）
-  // user_metadata に氏名等を保存しておく → メール認証後、トリガーで profiles に転記される
-  const origin =
-    req.headers.get("origin") ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    undefined;
-
+  // メール認証は行わない（Supabase側で Confirm email を OFF にしておく）。
+  // 決済済み＝本人のメール所有は確認済みとみなし、そのまま登録する。
   let userId = null;
   const { data: created, error: createErr } = await svc.auth.admin.createUser({
     email,
     password,
-    email_confirm: false,
     user_metadata: {
       last_name: md.last_name || "",
       first_name: md.first_name || "",
@@ -106,19 +100,6 @@ export async function POST(req) {
 
   if (created && created.user) {
     userId = created.user.id;
-    // 念のため、認証メールを生成して再送（adminだとconfirmation送信を保証する場合に）
-    try {
-      await svc.auth.admin.generateLink({
-        type: "signup",
-        email,
-        password,
-        options: {
-          redirectTo: origin ? `${origin}/login` : undefined,
-        },
-      });
-    } catch {
-      /* generateLink失敗は致命的ではない（createUser側でメール送信済みのはず） */
-    }
   } else {
     // 既存ユーザーが居る場合：そのIDを引き当てて purchases だけ追加
     const { data: list } = await svc.auth.admin.listUsers({
@@ -137,6 +118,18 @@ export async function POST(req) {
       { status: 500 }
     );
   }
+
+  // 会員情報を profiles に直接保存（email_confirm: true だとトリガーは発火しないため）
+  await svc.from("profiles").upsert(
+    {
+      id: userId,
+      last_name: md.last_name || "",
+      first_name: md.first_name || "",
+      university: md.university || "",
+      email,
+    },
+    { onConflict: "id" }
+  );
 
   // 購入記録（重複防止のため session_id でUPSERT）
   await svc.from("purchases").upsert(

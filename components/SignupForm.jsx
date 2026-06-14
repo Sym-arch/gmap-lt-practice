@@ -7,7 +7,6 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
-import { PRICE_LABEL } from "@/lib/site";
 
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const stripePromise = PUBLISHABLE_KEY ? loadStripe(PUBLISHABLE_KEY) : null;
@@ -129,21 +128,14 @@ export default function SignupForm() {
   if (step === "done") {
     return (
       <div className="card trial-end">
-        <div className="big">ご登録ありがとうございます</div>
+        <div className="big">Top Firm Pass 会員登録ありがとうございます</div>
         <p>
-          ご登録のメールアドレスに、
+          会員登録が完了しました。
           <br />
-          ① <b>メール認証リンク</b>
-          <br />
-          ② 決済完了の領収メール
-          <br />
-          の2通をお送りしました。
-        </p>
-        <p style={{ marginTop: 12 }}>
-          ①のリンクをクリックしてメール認証を完了すると、ログインできるようになります。
+          ご登録のメールアドレスとパスワードで、そのままログインいただけます。
         </p>
         <p style={{ fontSize: 12.5, color: "var(--ink-soft)", marginTop: 14 }}>
-          メールが届かない場合は、迷惑メールフォルダもご確認ください。
+          ご登録のメールアドレスには、決済完了の領収メールをお送りしています。
         </p>
         <Link href="/login" className="btn block">
           ログインへ
@@ -167,9 +159,7 @@ export default function SignupForm() {
       <div>
         <div className="card" style={{ marginBottom: 14 }}>
           <h2>② お支払い</h2>
-          <div className="subtitle">
-            会員プラン {PRICE_LABEL}（買い切り）の決済をお願いします。
-          </div>
+          <div className="subtitle">会員登録をお願いします。</div>
         </div>
         {options ? (
           <div id="stripe-embedded-checkout-wrap">

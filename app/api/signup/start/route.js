@@ -70,8 +70,7 @@ export async function POST(req) {
           currency: "jpy",
           unit_amount: PRICE_YEN,
           product_data: {
-            name: `${SITE_NAME} 会員プラン`,
-            description: "GMAP(LT)・TG-WEB・玉手箱・SPI3 模擬試験 全回アクセス（買い切り）",
+            name: SITE_NAME,
           },
         },
         quantity: 1,

@@ -14,6 +14,24 @@ import { PRICE_LABEL } from "@/lib/site";
 
 const MARKS = ["ア", "イ", "ウ", "エ"];
 
+/* q.underline に指定した文字列を、問題文中で実際に下線付きで表示する */
+function renderQText(q) {
+  if (!q.underline || !q.q.includes(q.underline)) return q.q;
+  const parts = q.q.split(q.underline);
+  const out = [];
+  parts.forEach((p, i) => {
+    if (i > 0) {
+      out.push(
+        <u key={`u${i}`} className="q-underline">
+          {q.underline}
+        </u>
+      );
+    }
+    out.push(<span key={`t${i}`}>{p}</span>);
+  });
+  return out;
+}
+
 /*
   クイズエンジン。
   mode="test"   : /api/questions から1回分を取得して出題（無料体験ゲートはAPI側）
@@ -238,7 +256,7 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
         {mode === "review" && item.testTitle && (
           <div className="subtitle">出典：{item.testTitle}</div>
         )}
-        <div className="q-text">{q.q}</div>
+        <div className="q-text">{renderQText(q)}</div>
         {q.table && (
           <table className="q-table">
             <thead>

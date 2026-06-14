@@ -502,6 +502,11 @@ h2 { font-size: 17px; margin: 0 0 12px; }
   white-space: pre-wrap;
   margin-bottom: 16px;
 }
+.q-underline {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
 .q-table {
   width: 100%;
   border-collapse: collapse;
