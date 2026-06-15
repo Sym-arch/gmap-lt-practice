@@ -2,7 +2,7 @@
 const exams = {
   gmap: { files: 10, cats: ["structure", "reasoning", "quantitative", "data", "puzzle", "problem"] },
   tgweb: { files: 10, cats: ["keisu", "gengo", "eigo"] },
-  tamatebako: { files: 5, cats: ["keisu", "gengo", "eigo"] },
+  tamatebako: { files: 10, cats: ["keisu", "gengo", "eigo"] },
   spi3: { files: 5, cats: ["higengo", "gengo", "kozo", "eigo"] },
 };
 
