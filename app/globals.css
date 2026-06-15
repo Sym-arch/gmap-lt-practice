@@ -497,6 +497,39 @@ h2 { font-size: 17px; margin: 0 0 12px; }
   border-radius: 999px;
   margin-bottom: 10px;
 }
+/* ---------- ローディングスピナー ---------- */
+.spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 56px 16px;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--brand-tint);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+.spinner-label {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* ページ遷移時の全画面ローディング */
+.page-loading {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .q-text {
   font-size: 15.5px;
   white-space: pre-wrap;

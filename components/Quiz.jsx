@@ -10,6 +10,7 @@ import {
   recordResult,
   recordAnswer,
 } from "@/components/storage";
+import Spinner from "@/components/Spinner";
 import { PRICE_LABEL } from "@/lib/site";
 
 const MARKS = ["ア", "イ", "ウ", "エ"];
@@ -186,7 +187,7 @@ export default function Quiz({ examId, examName, categories, mode, testId }) {
   /* ---------- 状態別画面 ---------- */
 
   if (state === "loading") {
-    return <div className="card">問題を読み込んでいます…</div>;
+    return <div className="card"><Spinner label="問題を読み込んでいます" /></div>;
   }
 
   if (state === "locked") {

@@ -7,6 +7,7 @@ import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
+import Spinner from "@/components/Spinner";
 
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const stripePromise = PUBLISHABLE_KEY ? loadStripe(PUBLISHABLE_KEY) : null;
@@ -168,7 +169,7 @@ export default function SignupForm() {
             </EmbeddedCheckoutProvider>
           </div>
         ) : (
-          <div className="card">読み込み中…</div>
+          <div className="card"><Spinner /></div>
         )}
         {error && <div className="error-box" style={{ marginTop: 12 }}>{error}</div>}
         <button

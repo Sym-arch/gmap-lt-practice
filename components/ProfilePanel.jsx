@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getStats, getStreak } from "@/components/storage";
 import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
+import Spinner from "@/components/Spinner";
 import { EXAMS } from "@/lib/examMeta";
 
 export default function ProfilePanel() {
@@ -27,7 +28,7 @@ export default function ProfilePanel() {
   }, []);
 
   if (!me || !summary) {
-    return <div className="card">読み込み中…</div>;
+    return <div className="card"><Spinner /></div>;
   }
 
   if (!me.loggedIn) {
