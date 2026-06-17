@@ -24,6 +24,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ja">
       <body>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZWJXFZFBS"></script>
+    
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SZWJXFZFBS');
+</script>
+  
         <SiteHeader />
         <main className="container">{children}</main>
         <footer className="site-footer">
