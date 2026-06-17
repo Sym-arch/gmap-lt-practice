@@ -1,6 +1,9 @@
 import "./globals.css";
+import Script from "next/script";
 import SiteHeader from "@/components/SiteHeader";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+
+const GA_ID = "G-SZWJXFZFBS";
 
 export const metadata = {
   title: `${SITE_NAME}｜${SITE_TAGLINE}`,
@@ -24,17 +27,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ja">
       <body>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZWJXFZFBS"></script>
-    
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+        {/* Google Analytics（GA4） */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+        </Script>
 
-  gtag('config', 'G-SZWJXFZFBS');
-</script>
-  
         <SiteHeader />
         <main className="container">{children}</main>
         <footer className="site-footer">
