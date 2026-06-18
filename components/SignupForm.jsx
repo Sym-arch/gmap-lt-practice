@@ -1,21 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import Spinner from "@/components/Spinner";
+import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
 
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const stripePromise = PUBLISHABLE_KEY ? loadStripe(PUBLISHABLE_KEY) : null;
 
-const STORAGE_KEY = "tfp_signup_pw";
-
 export default function SignupForm() {
-  const [step, setStep] = useState("form"); // form / pay / done
+  const [step, setStep] = useState("form"); // form / pay / check-email
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState(null);
@@ -29,6 +28,10 @@ export default function SignupForm() {
     password: "",
     password2: "",
   });
+
+  // 決済完了コールバックから参照する最新値（クロージャの陳腐化を防ぐためref）
+  const dataRef = useRef({ sessionId: null, form });
+  dataRef.current.form = form;
 
   function setField(k, v) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -74,11 +77,7 @@ export default function SignupForm() {
         setError(data.error || "お手続きを開始できませんでした。");
         return;
       }
-      // パスワードはサーバーに送らず、決済完了後にここから完了APIに渡す
-      sessionStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ sessionId: data.sessionId, password: form.password })
-      );
+      dataRef.current.sessionId = data.sessionId;
       setClientSecret(data.clientSecret);
       setStep("pay");
     } catch {
@@ -88,31 +87,50 @@ export default function SignupForm() {
     }
   }
 
-  // Stripe Embedded Checkout の完了コールバック
+  // Stripe Embedded Checkout の決済完了コールバック
+  // 1) Supabaseでサインアップ（→ Supabaseが認証メールを送信）
+  // 2) 決済をアカウントに紐づけて記録
+  // 3) 「メール認証を完了してください」画面へ
   const onCheckoutComplete = useCallback(async () => {
     setBusy(true);
     setError("");
     try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        setError(
-          "登録情報が見つかりません。最初からやり直してください。"
-        );
+      const { sessionId, form: f } = dataRef.current;
+      const supabase = getSupabaseBrowser();
+      if (!supabase) {
+        setError("認証機能が未設定です。管理者にお問い合わせください。");
         return;
       }
-      const { sessionId, password } = JSON.parse(raw);
-      const res = await fetch("/api/signup/complete", {
+
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const { error: signErr } = await supabase.auth.signUp({
+        email: f.email.trim(),
+        password: f.password,
+        options: {
+          data: {
+            last_name: f.last_name.trim(),
+            first_name: f.first_name.trim(),
+            university: f.university.trim(),
+            full_name: `${f.last_name.trim()} ${f.first_name.trim()}`.trim(),
+          },
+          emailRedirectTo: `${origin}/auth/confirmed`,
+        },
+      });
+      // すでに登録済みの場合（再決済など）はエラーにせず先へ
+      if (signErr && !/already|registered|exists/i.test(signErr.message)) {
+        setError("アカウント作成に失敗しました：" + signErr.message);
+        return;
+      }
+
+      // 決済をアカウントに紐づけて記録（サーバー側でStripeの支払いを検証）
+      await fetch("/api/signup/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, password }),
-      });
-      const data = await res.json();
-      sessionStorage.removeItem(STORAGE_KEY);
-      if (!res.ok) {
-        setError(data.error || "会員登録の完了に失敗しました。");
-        return;
-      }
-      setStep("done");
+        body: JSON.stringify({ sessionId }),
+      }).catch(() => {});
+
+      setStep("check-email");
     } catch {
       setError("通信エラーが発生しました。");
     } finally {
@@ -125,21 +143,21 @@ export default function SignupForm() {
     [clientSecret, onCheckoutComplete]
   );
 
-  /* ---------- 完了画面 ---------- */
-  if (step === "done") {
+  /* ---------- メール認証の案内画面 ---------- */
+  if (step === "check-email") {
     return (
       <div className="card trial-end">
-        <div className="big">Top Firm Pass 会員登録ありがとうございます</div>
+        <div className="big">メール認証を完了してください</div>
         <p>
-          会員登録が完了しました。
+          ご登録のメールアドレス宛に、<b>Top Firm Pass</b> から認証メールをお送りしました。
           <br />
-          ご登録のメールアドレスとパスワードで、そのままログインいただけます。
+          メール内のボタン（リンク）をクリックして認証を完了すると、ログインできるようになります。
         </p>
         <p style={{ fontSize: 12.5, color: "var(--ink-soft)", marginTop: 14 }}>
-          ご登録のメールアドレスには、決済完了の領収メールをお送りしています。
+          メールが届かない場合は、迷惑メールフォルダもご確認ください。
         </p>
-        <Link href="/login" className="btn block">
-          ログインへ
+        <Link href="/login" className="link-btn">
+          ログイン画面へ
         </Link>
       </div>
     );
@@ -189,11 +207,12 @@ export default function SignupForm() {
   /* ---------- フォーム画面（既定） ---------- */
   return (
     <form onSubmit={startCheckout}>
+      <div className="subtitle">
+        個人情報をご入力のあと、続けて決済をお願いします。決済後にお送りする認証メールで、
+        メール認証を完了すると登録が確定します。
+      </div>
       <div className="card">
         <h2>① 個人情報</h2>
-        <div className="subtitle">
-          メール認証完了後、これらの情報をご登録のアカウントに紐づけます。
-        </div>
 
         <div className="field-row">
           <div className="field">
