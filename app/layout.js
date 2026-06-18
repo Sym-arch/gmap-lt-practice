@@ -1,6 +1,8 @@
 import "./globals.css";
+import { Suspense } from "react";
 import Script from "next/script";
 import SiteHeader from "@/components/SiteHeader";
+import GAListener from "@/components/GAListener";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
 const GA_ID = "G-SZWJXFZFBS";
@@ -36,8 +38,12 @@ export default function RootLayout({ children }) {
           {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', '${GA_ID}');`}
+// SPA遷移は GAListener が手動で page_view を送るため、自動送信はオフ
+gtag('config', '${GA_ID}', { send_page_view: false });`}
         </Script>
+        <Suspense fallback={null}>
+          <GAListener gaId={GA_ID} />
+        </Suspense>
 
         <SiteHeader />
         <main className="container">{children}</main>

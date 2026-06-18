@@ -20,7 +20,10 @@ export default function PriceSection() {
   return (
     <div className="price-card">
       <div className="price-label">会員プラン（お支払いは一度きり）</div>
-      <div className="price">{PRICE_LABEL}</div>
+      <div className="price">
+        {PRICE_LABEL}
+        <span className="price-tax">（税込）</span>
+      </div>
       <div className="price-note">
         月額費用はかかりません。ご登録後は追加のお支払いなくご利用いただけます。
       </div>
