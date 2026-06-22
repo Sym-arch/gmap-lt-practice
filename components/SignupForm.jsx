@@ -14,6 +14,20 @@ import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const stripePromise = PUBLISHABLE_KEY ? loadStripe(PUBLISHABLE_KEY) : null;
 
+/* Meta（Facebook）ピクセルへコンバージョンを送信。
+   - 初月無料（トライアル）：StartTrial
+   - 通常登録：Subscribe
+   いずれも会員登録の完了として CompleteRegistration も送る。 */
+function trackConversion(isTrial) {
+  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+  window.fbq("track", "CompleteRegistration");
+  if (isTrial) {
+    window.fbq("track", "StartTrial", { value: 0, currency: "JPY" });
+  } else {
+    window.fbq("track", "Subscribe", { value: 1480, currency: "JPY" });
+  }
+}
+
 export default function SignupForm() {
   const router = useRouter();
   const [step, setStep] = useState("form"); // form / pay / finalizing / check-email
@@ -90,6 +104,7 @@ export default function SignupForm() {
         return;
       }
       dataRef.current.sessionId = data.sessionId;
+      dataRef.current.trial = data.trial;
       setClientSecret(data.clientSecret);
       setStep("pay");
     } catch {
@@ -163,6 +178,7 @@ export default function SignupForm() {
 
       // ログイン成功：そのままログイン状態でトップへ遷移（メール認証不要）
       if (session) {
+        trackConversion(dataRef.current.trial);
         router.push("/");
         router.refresh();
         return;

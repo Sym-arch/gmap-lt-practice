@@ -86,6 +86,14 @@ const MARKS = ["ア", "イ", "ウ", "エ", "オ"];
 
 export default function LpExperience() {
   const rootRef = useRef(null);
+  const [campaign, setCampaign] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/campaign")
+      .then((r) => r.json())
+      .then(setCampaign)
+      .catch(() => setCampaign({ active: false }));
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -108,6 +116,15 @@ export default function LpExperience() {
 
   return (
     <div className={styles.root} ref={rootRef}>
+      {/* ===== キャンペーン告知バー ===== */}
+      {campaign?.active && (
+        <a href="/signup" className={styles.campaignBar}>
+          <span className={styles.campaignTag}>先着{campaign.limit}名</span>
+          初月無料キャンペーン実施中
+          <span className={styles.campaignRemain}>残り{campaign.remaining}名</span>
+        </a>
+      )}
+
       {/* ===== ファーストビュー ===== */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
@@ -248,6 +265,11 @@ export default function LpExperience() {
       <section className={styles.pricing}>
         <div className={styles.priceCard} data-reveal>
           <span className={styles.kickerGold}>PLAN</span>
+          {campaign?.active && (
+            <div className={styles.priceCampaign}>
+              先着{campaign.limit}名 初月無料（残り{campaign.remaining}名）
+            </div>
+          )}
           <div className={styles.priceRow}>
             <span className={styles.priceCur}>¥</span>
             <span className={styles.priceNum}>1,480</span>
