@@ -301,7 +301,6 @@ export default function SignupForm() {
             <b>初月無料キャンペーン実施中</b>
             <span>
               いまご登録の方は最初の{campaign.trialDays}日間が無料。
-              残り<b>{campaign.remaining}</b>名。
             </span>
           </div>
         </div>
