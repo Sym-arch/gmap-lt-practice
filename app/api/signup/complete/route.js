@@ -52,7 +52,12 @@ export async function POST(req) {
       { status: 400 }
     );
   }
-  if (session.payment_status !== "paid") {
+  // 初月無料（トライアル）の場合は即時決済がないため payment_status は
+  // "no_payment_required" になる。サブスクが成立していれば成功として扱う。
+  const okStatus =
+    session.payment_status === "paid" ||
+    session.payment_status === "no_payment_required";
+  if (!okStatus || !session.subscription) {
     return NextResponse.json(
       { error: "決済が完了していません。" },
       { status: 402 }

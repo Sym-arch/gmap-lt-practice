@@ -32,7 +32,8 @@ export async function POST(req) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object;
-      if (session.mode === "subscription" && session.payment_status === "paid") {
+      // 通常決済（paid）に加え、初月無料トライアル（no_payment_required）も対象
+      if (session.mode === "subscription" && session.subscription) {
         await recordSubscriptionFromSession(session, stripe);
       }
       break;

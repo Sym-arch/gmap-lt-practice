@@ -12,8 +12,12 @@ create table if not exists public.subscriptions (
   stripe_subscription_id text unique,
   status text not null default 'active',
   current_period_end timestamptz,
+  source text not null default 'stripe', -- 'stripe' | 'campaign'（初月無料）
   updated_at timestamptz not null default now()
 );
+
+-- 既存テーブルに source 列が無ければ追加（初月無料キャンペーンの枠カウント用）
+alter table public.subscriptions add column if not exists source text not null default 'stripe';
 
 alter table public.subscriptions enable row level security;
 

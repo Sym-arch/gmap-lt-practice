@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -21,6 +21,8 @@ export default function SignupForm() {
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState(null);
 
+  const [campaign, setCampaign] = useState(null); // { active, remaining, trialDays }
+
   const [form, setForm] = useState({
     last_name: "",
     first_name: "",
@@ -30,6 +32,14 @@ export default function SignupForm() {
     password: "",
     password2: "",
   });
+
+  // 先着◯名・初月無料キャンペーンの受付状況を取得
+  useEffect(() => {
+    fetch("/api/campaign")
+      .then((r) => r.json())
+      .then(setCampaign)
+      .catch(() => setCampaign({ active: false }));
+  }, []);
 
   // 決済完了コールバックから参照する最新値（クロージャの陳腐化を防ぐためref）
   const dataRef = useRef({ sessionId: null, form });
@@ -257,9 +267,23 @@ export default function SignupForm() {
   /* ---------- フォーム画面（既定） ---------- */
   return (
     <form onSubmit={startCheckout}>
+      {campaign?.active && (
+        <div className="campaign-banner">
+          <span className="campaign-badge">先着{campaign.limit}名</span>
+          <div>
+            <b>初月無料キャンペーン実施中</b>
+            <span>
+              いまご登録の方は最初の{campaign.trialDays}日間が無料。
+              残り<b>{campaign.remaining}</b>名。
+            </span>
+          </div>
+        </div>
+      )}
       <div className="subtitle">
-        個人情報をご入力のあと、続けて決済をお願いします。決済後にお送りする認証メールで、
-        メール認証を完了すると登録が確定します。
+        個人情報をご入力のあと、お支払い情報のご登録に進みます。
+        {campaign?.active
+          ? `初月（${campaign.trialDays}日間）は無料で、トライアル終了後に月額のご請求が始まります。`
+          : "ご登録後すぐに学習を始められます。"}
       </div>
       <div className="card">
         <h2>① 個人情報</h2>

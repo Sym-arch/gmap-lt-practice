@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PRICE_YEN, SITE_NAME } from "@/lib/site";
 import { getServiceClient } from "@/lib/supabaseServer";
+import { isCampaignOpen, CAMPAIGN_TRIAL_DAYS } from "@/lib/subscriptions";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +59,18 @@ export async function POST(req) {
     }
   }
 
+  // 先着100名・初月無料キャンペーン：枠が残っていればトライアルを付与
+  const campaignOpen = await isCampaignOpen();
+
   const stripe = new Stripe(secretKey);
+
+  const subscriptionData = {
+    metadata: { email, last_name, first_name, university },
+  };
+  if (campaignOpen) {
+    // 30日間の無料トライアル（カードは登録するが初月は課金されない）
+    subscriptionData.trial_period_days = CAMPAIGN_TRIAL_DAYS;
+  }
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
@@ -79,9 +91,7 @@ export async function POST(req) {
     ],
     customer_email: email,
     // 作成されるサブスクリプションにもメタデータを持たせ、Webhookでの突合に使う
-    subscription_data: {
-      metadata: { email, last_name, first_name, university },
-    },
+    subscription_data: subscriptionData,
     metadata: {
       email,
       last_name,
@@ -93,5 +103,6 @@ export async function POST(req) {
   return NextResponse.json({
     clientSecret: session.client_secret,
     sessionId: session.id,
+    trial: campaignOpen,
   });
 }
