@@ -12,6 +12,8 @@ export default function ProfilePanel() {
   const router = useRouter();
   const [me, setMe] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [portalBusy, setPortalBusy] = useState(false);
+  const [portalError, setPortalError] = useState("");
 
   useEffect(() => {
     fetch("/api/me")
@@ -186,11 +188,46 @@ export default function ProfilePanel() {
         試験一覧へ
       </Link>
 
+      {me.premium && (
+        <>
+          <button
+            className="link-btn"
+            onClick={openPortal}
+            disabled={portalBusy}
+          >
+            {portalBusy ? "ポータルを開いています…" : "プランを管理・解約する"}
+          </button>
+          {portalError && (
+            <div className="error-box" style={{ marginTop: 8 }}>
+              {portalError}
+            </div>
+          )}
+        </>
+      )}
+
       <button className="link-btn" onClick={logout}>
         ログアウト
       </button>
     </div>
   );
+
+  async function openPortal() {
+    setPortalBusy(true);
+    setPortalError("");
+    try {
+      const res = await fetch("/api/billing/portal", { method: "POST" });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        setPortalError(data.error || "ポータルを開けませんでした。");
+      }
+    } catch {
+      setPortalError("通信エラーが発生しました。");
+    } finally {
+      setPortalBusy(false);
+    }
+  }
 
   async function logout() {
     const supabase = getSupabaseBrowser();

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { PRICE_LABEL } from "@/lib/site";
+import { PRICE_LABEL, PRICE_UNIT_SUFFIX } from "@/lib/site";
 
 export default function PriceSection() {
   const [me, setMe] = useState(null);
@@ -19,13 +19,13 @@ export default function PriceSection() {
 
   return (
     <div className="price-card">
-      <div className="price-label">会員プラン（お支払いは一度きり）</div>
+      <div className="price-label">会員プラン（月額制）</div>
       <div className="price">
         {PRICE_LABEL}
-        <span className="price-tax">（税込）</span>
+        <span className="price-tax">{PRICE_UNIT_SUFFIX}</span>
       </div>
       <div className="price-note">
-        月額費用はかかりません。ご登録後は追加のお支払いなくご利用いただけます。
+        4試験すべての模試・解説・復習機能をご利用いただけます。
       </div>
       <ul>
         <li>GMAP(LT)・TG-WEB・玉手箱・SPI3 すべての模擬試験</li>

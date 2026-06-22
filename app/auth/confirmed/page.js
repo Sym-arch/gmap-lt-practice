@@ -1,24 +1,10 @@
-import Link from "next/link";
+import ConfirmHandler from "@/components/ConfirmHandler";
 
-export const metadata = { title: "メール認証完了" };
+export const metadata = { title: "メール認証" };
 
 /* Supabaseのメール認証リンクから戻ってくるページ。
-   認証が完了したユーザーに会員登録完了を知らせる。 */
+   ConfirmHandler がリンクのトークンを検証してメール認証を完了させ、
+   そのままログイン状態にする。 */
 export default function ConfirmedPage() {
-  return (
-    <div className="card trial-end">
-      <div className="big">Top Firm Pass 会員登録ありがとうございます</div>
-      <p>
-        メール認証が完了しました。
-        <br />
-        ご登録のメールアドレスとパスワードでログインいただけます。
-      </p>
-      <Link href="/login" className="btn block">
-        ログインする
-      </Link>
-      <Link href="/" className="link-btn">
-        試験一覧へ
-      </Link>
-    </div>
-  );
+  return <ConfirmHandler />;
 }

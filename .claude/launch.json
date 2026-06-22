@@ -12,6 +12,12 @@
       "runtimeExecutable": "C:\\Users\\Tiida\\Downloads\\econ-news-app\\venv\\Scripts\\python.exe",
       "runtimeArgs": ["C:\\Users\\Tiida\\Downloads\\econ-news-app\\app.py"],
       "port": 5000
+    },
+    {
+      "name": "search-on-the-map",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "C:\\Users\\Tiida\\Downloads\\search-on-the-map", "--", "--port=3100"],
+      "port": 3100
     }
   ]
 }

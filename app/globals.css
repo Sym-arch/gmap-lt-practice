@@ -274,6 +274,111 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 
 .section-title { font-size: 18px; font-weight: 800; margin: 28px 0 12px; }
 
+/* ---------- 広告用ランディングページ（/lp） ---------- */
+.lp-trust {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-top: 22px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.lp-trust b { color: var(--brand); font-size: 19px; font-weight: 800; margin-right: 3px; }
+
+.lp-pain-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 26px;
+  display: grid;
+  gap: 10px;
+}
+.lp-pain-list li {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 14px 16px 14px 44px;
+  font-size: 13.5px;
+  color: var(--ink);
+  position: relative;
+}
+.lp-pain-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 14px;
+  top: 13px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--brand-tint);
+  color: var(--brand-dark);
+  font-size: 12px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.lp-steps { display: grid; gap: 12px; margin: 8px 0 26px; }
+.lp-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.lp-step-num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fdfdfb;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+}
+.lp-step b { display: block; font-size: 14.5px; color: var(--ink); margin-bottom: 3px; }
+.lp-step p { margin: 0; font-size: 13px; color: var(--ink-soft); }
+
+.lp-faq { display: grid; gap: 10px; margin: 8px 0 26px; }
+.lp-faq-item {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.lp-faq-q { font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 6px; }
+.lp-faq-q::before { content: "Q. "; color: var(--brand); font-weight: 800; }
+.lp-faq-a { font-size: 13px; color: var(--ink-soft); }
+
+.lp-final {
+  text-align: center;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-tint);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  margin: 28px 0 8px;
+}
+.lp-final h2 { font-size: 19px; margin: 0 0 8px; color: var(--ink); }
+.lp-final p { color: var(--ink-soft); font-size: 14px; margin: 0 0 18px; }
+
+@media (max-width: 480px) {
+  .lp-trust { gap: 16px; font-size: 12px; }
+  .lp-trust b { font-size: 16px; }
+  .lp-pain-list li { font-size: 12.5px; padding: 12px 14px 12px 40px; }
+  .lp-step b { font-size: 13.5px; }
+  .lp-step p { font-size: 12px; }
+  .lp-final { padding: 24px 16px; }
+  .lp-final h2 { font-size: 16.5px; }
+  .lp-final p { font-size: 13px; }
+}
+
 /* ---------- exam home ---------- */
 .back-link {
   display: inline-block;
@@ -529,6 +634,19 @@ h2 { font-size: 17px; margin: 0 0 12px; }
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* 決済完了〜遷移完了まで画面全体を覆い、操作を遮断する不透明オーバーレイ。
+   ヘッダー（z-index:20）より前面に出して背後を一切触らせない。 */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
 .q-text {

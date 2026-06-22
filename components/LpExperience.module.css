@@ -1,0 +1,292 @@
+/* =====================================================================
+   Top Firm Pass LP — モバイルファースト（基準=スマホ、min-widthで拡張）
+   白 × 深緑 / メイン=濃いグリーン+黒 / アクセント=黄。フォントはアプリ統一。
+   ===================================================================== */
+
+.root {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  margin-top: -16px;
+  overflow-x: clip;
+
+  --g: #15734e;
+  --g-deep: #0c3a2a;
+  --g-darker: #072619;
+  --ink: #0e1512;
+  --white: #f6f8f6;
+  --cream: #edf3ef;
+  --gold: #e7b53c;
+  --gold-soft: #f3d784;
+  --head: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+
+  color: var(--ink);
+  font-family: var(--head);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.root [data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.root [data-reveal].revealed { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .root [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+/* 見出し */
+.kicker, .kickerGold {
+  display: inline-block;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.2em;
+  color: var(--g); margin-bottom: 12px;
+}
+.kickerGold { color: var(--gold); }
+.sectionHead { text-align: center; margin: 0 auto 26px; max-width: 640px; padding: 0 20px; }
+.sectionSub { font-size: 13.5px; color: #6c7a72; margin: 12px 0 0; }
+.h1 {
+  font-family: var(--head); font-weight: 800;
+  font-size: clamp(28px, 8vw, 52px); line-height: 1.22; letter-spacing: 0.01em; margin: 6px 0 0;
+}
+.h1 em { font-style: normal; color: var(--g); position: relative; }
+.h1 em::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0.06em;
+  height: 0.18em; background: var(--gold); opacity: 0.55; z-index: -1;
+}
+.h2Light, .h2Dark {
+  font-family: var(--head); font-weight: 800;
+  font-size: clamp(22px, 6vw, 32px); line-height: 1.34; margin: 0; letter-spacing: 0.01em;
+}
+.h2Light { color: var(--white); }
+.h2Dark { color: var(--ink); }
+
+/* ボタン */
+.btnGold, .btnGoldLg, .btnTest, .btnGhost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: none; cursor: pointer; font-weight: 800; border-radius: 999px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.btnGold, .btnGoldLg {
+  background: var(--gold); color: var(--ink); font-size: 15px; padding: 14px 24px;
+  box-shadow: 0 10px 24px rgba(231, 181, 60, 0.32);
+}
+.btnGold:hover, .btnGoldLg:hover { transform: translateY(-2px); background: var(--gold-soft); }
+.btnGoldLg { font-size: 16px; padding: 16px 30px; }
+.btnGhost {
+  font-size: 14px; color: var(--g-deep);
+  padding: 12px 18px; border: 1.5px solid rgba(12, 58, 42, 0.25);
+}
+.btnGhost:hover { background: rgba(12, 58, 42, 0.06); border-color: var(--g); }
+.btnTest {
+  background: var(--g-deep); color: #fff; font-size: 14px; padding: 13px 22px; margin-top: 18px;
+}
+.btnTest:hover { background: var(--g); transform: translateX(2px); }
+
+/* ===================== ヒーロー（モバイル基準：縦積み） ===================== */
+.hero {
+  background: linear-gradient(180deg, var(--white) 0%, var(--white) 46%, var(--g-deep) 46%, var(--g-darker) 100%);
+  padding: 44px 0 48px;
+}
+.heroInner {
+  max-width: 1080px; margin: 0 auto; padding: 0 22px;
+  display: flex; flex-direction: column; gap: 36px; align-items: center; text-align: center;
+}
+.heroCopy { display: flex; flex-direction: column; align-items: center; }
+.eyebrow {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--g);
+  padding: 6px 14px; border: 1px solid rgba(21, 115, 78, 0.3); border-radius: 999px; margin-bottom: 18px;
+}
+.lead { font-size: clamp(14px, 4vw, 17px); color: #44524b; margin: 18px 0 26px; font-weight: 500; max-width: 440px; }
+.heroCta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.heroMeta { display: flex; align-items: center; gap: 12px; margin-top: 26px; font-size: 12.5px; color: #5a675f; }
+.heroMeta b { font-size: 19px; color: var(--ink); font-weight: 800; margin-right: 2px; }
+.dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); }
+
+/* スマホ枠 */
+.heroVisual { display: flex; justify-content: center; }
+.phone { position: relative; animation: float 6s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@media (prefers-reduced-motion: reduce) { .phone { animation: none; } }
+.phoneGlow {
+  position: absolute; inset: -8% -16%;
+  background: radial-gradient(closest-side, rgba(231,181,60,0.3), transparent 70%);
+}
+.phoneBody {
+  position: relative; width: 248px; height: 506px;
+  background: linear-gradient(160deg, #1a1f1d, #05100b);
+  border-radius: 40px; padding: 11px;
+  box-shadow: 0 26px 60px rgba(0,0,0,0.45), inset 0 0 0 2px rgba(255,255,255,0.06);
+}
+.notch { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 84px; height: 20px; background: #05100b; border-radius: 999px; z-index: 2; }
+.phoneScreen { width: 100%; height: 100%; background: #eef2ef; border-radius: 30px; overflow: hidden; }
+.phoneImg { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+
+/* スクショ未配置時のアプリ再現 */
+.appHome { height: 100%; background: linear-gradient(180deg, #f7faf8, #eaf0ec); padding: 40px 12px 14px; }
+.appBar { display: flex; align-items: center; gap: 7px; font-weight: 800; font-size: 13px; color: var(--g-deep); padding: 4px 6px 12px; }
+.appDot { width: 16px; height: 16px; border-radius: 5px; background: var(--g); }
+.appCard {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; border: 1px solid #e2e9e4; border-left: 4px solid var(--g);
+  border-radius: 13px; padding: 12px; margin-bottom: 10px;
+  box-shadow: 0 3px 9px rgba(12,58,42,0.05);
+  opacity: 0; animation: cardIn 0.5s ease forwards; animation-delay: calc(var(--n) * 0.1s);
+}
+.appCard:nth-child(3) { border-left-color: #136d62; }
+.appCard:nth-child(4) { border-left-color: #3c8d4f; }
+.appCard:nth-child(5) { border-left-color: #0d5a3c; }
+@keyframes cardIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+@media (prefers-reduced-motion: reduce) { .appCard { opacity: 1; animation: none; } }
+.appCardName { font-weight: 800; font-size: 13.5px; color: var(--ink); }
+.appCardTag { font-size: 10px; color: #76837c; margin-top: 2px; }
+.appBadge { font-size: 9.5px; font-weight: 800; color: var(--g-deep); background: #e3efe9; padding: 4px 8px; border-radius: 999px; }
+
+/* ===================== テスト × ファーム × 実問題 ===================== */
+.tests { background: var(--white); padding: 50px 0 60px; }
+.testList { max-width: 1080px; margin: 0 auto; }
+.testBlock { background: var(--white); }
+.testBlock:not(:first-of-type) {
+  clip-path: polygon(0 26px, 100% 0, 100% 100%, 0 100%);
+  margin-top: -26px; padding-top: 26px;
+}
+.blockAlt { background: var(--cream); }
+.testGrid {
+  max-width: 1000px; margin: 0 auto; padding: 30px 22px;
+  display: flex; flex-direction: column; gap: 22px;
+  border-bottom: 1px solid rgba(12, 58, 42, 0.08);
+}
+.testTop { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.testIcon {
+  display: grid; place-items: center; width: 64px; height: 64px; border-radius: 18px;
+  background: linear-gradient(160deg, #15734e, #0c3a2a); color: var(--gold); flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(12, 58, 42, 0.18);
+}
+.testNo { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--gold); }
+.testName { font-size: clamp(21px, 6vw, 27px); font-weight: 800; color: var(--ink); margin: 1px 0; }
+.testTag { font-size: 12.5px; color: #6c7a72; }
+.testDesc { font-size: 14px; color: #36433c; line-height: 1.75; margin: 0 0 14px; }
+.catRow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.cat { font-size: 11.5px; font-weight: 700; color: var(--g-deep); background: rgba(21,115,78,0.08); border: 1px solid rgba(21,115,78,0.16); padding: 4px 10px; border-radius: 7px; }
+.firmBlock { border-top: 1px dashed rgba(12,58,42,0.18); padding-top: 14px; }
+.firmLabel { font-size: 11.5px; font-weight: 700; color: #6c7a72; }
+.firmChips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+.chip { font-size: 12.5px; font-weight: 800; color: #fff; background: var(--g-deep); padding: 6px 13px; border-radius: 999px; }
+
+/* 実問題の“アプリ画面風”カード */
+.testShot { display: flex; justify-content: center; }
+.shotFrame {
+  width: 100%; max-width: 360px;
+  background: #fff; border: 1px solid #dde5df; border-radius: 22px; overflow: hidden;
+  box-shadow: 0 18px 40px rgba(12, 58, 42, 0.14);
+}
+.shotBar {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--g-deep); color: #fff; font-weight: 800; font-size: 12.5px; padding: 11px 14px;
+}
+.shotDot { width: 14px; height: 14px; border-radius: 5px; background: var(--gold); }
+.shotProg { margin-left: auto; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.75); }
+.shotScreen { padding: 16px 15px 14px; background: #fbfcfa; }
+.progressTrack { height: 5px; background: #e3e9e4; border-radius: 999px; overflow: hidden; margin-bottom: 13px; }
+.progressFill { display: block; width: 16%; height: 100%; background: var(--g); border-radius: 999px; }
+.qChip { display: inline-block; font-size: 11px; font-weight: 800; color: var(--g-deep); background: #e3efe9; padding: 4px 11px; border-radius: 999px; margin-bottom: 10px; }
+.qText { font-size: 12.5px; line-height: 1.7; color: var(--ink); white-space: pre-wrap; margin: 0 0 13px; }
+.choices { display: flex; flex-direction: column; gap: 7px; }
+.choice {
+  display: flex; align-items: flex-start; gap: 9px;
+  background: #fff; border: 1.5px solid #e3e9e4; border-radius: 10px; padding: 9px 11px;
+  font-size: 12.5px; color: var(--ink); line-height: 1.5;
+}
+.choiceOk { border-color: var(--g); background: #e8f3ed; }
+.choiceMark {
+  flex-shrink: 0; width: 21px; height: 21px; border-radius: 50%; background: #eef2ef;
+  display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #66756d;
+}
+.choiceOk .choiceMark { background: var(--g); color: #fff; }
+.choiceTick { margin-left: auto; color: var(--g); flex-shrink: 0; }
+.shotFoot { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 13px; font-size: 11.5px; font-weight: 700; color: var(--g); }
+
+/* ===================== 学習イメージ（人物写真・深緑） ===================== */
+.learn { background: linear-gradient(180deg, var(--g-deep), var(--g-darker)); padding: 56px 0; }
+.learnGrid { max-width: 1000px; margin: 0 auto; padding: 0 22px; display: flex; flex-direction: column; gap: 28px; }
+.learnCopy { text-align: center; }
+.learnLead { font-size: 14px; color: rgba(234, 243, 238, 0.78); line-height: 1.8; margin: 16px auto 0; max-width: 420px; }
+.learnVisual { display: flex; justify-content: center; }
+.photo {
+  width: 100%; max-width: 460px; aspect-ratio: 4 / 3; object-fit: cover;
+  border-radius: 22px; border: 1px solid rgba(231, 181, 60, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+.photoPlaceholder {
+  width: 100%; max-width: 460px; aspect-ratio: 4 / 3;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 22px; border: 1.5px dashed rgba(231, 181, 60, 0.5);
+  background: rgba(255, 255, 255, 0.04); color: rgba(234, 243, 238, 0.8); text-align: center;
+}
+.phIcon { color: var(--gold); }
+.photoPlaceholder span { font-size: 14px; font-weight: 700; }
+.photoPlaceholder small { font-size: 11.5px; color: rgba(234, 243, 238, 0.5); font-family: var(--font-mono, monospace); }
+
+/* ===================== 特徴（深緑） ===================== */
+.features { background: var(--g-darker); padding: 56px 0; }
+.featGrid { max-width: 760px; margin: 0 auto; padding: 0 22px; display: grid; grid-template-columns: 1fr; gap: 14px; }
+.featCard {
+  text-align: center; background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(231, 181, 60, 0.2); border-radius: 18px; padding: 26px 18px;
+}
+.featIcon { display: inline-grid; place-items: center; width: 54px; height: 54px; border-radius: 15px; background: rgba(231, 181, 60, 0.14); color: var(--gold); margin-bottom: 14px; }
+.featT { font-size: 16.5px; font-weight: 800; color: #fff; margin: 0 0 6px; }
+.featD { font-size: 13px; color: rgba(234, 243, 238, 0.74); margin: 0; }
+
+/* ===================== 料金（白） ===================== */
+.pricing { background: var(--white); padding: 56px 22px; }
+.priceCard {
+  max-width: 440px; margin: 0 auto; text-align: center;
+  background: linear-gradient(165deg, var(--ink), #16221c);
+  border: 1px solid rgba(231, 181, 60, 0.4); border-radius: 24px; padding: 38px 26px;
+  box-shadow: 0 26px 54px rgba(12, 58, 42, 0.2);
+}
+.priceRow { display: flex; align-items: baseline; justify-content: center; gap: 4px; color: #fff; margin: 6px 0 4px; }
+.priceCur { font-size: 24px; font-weight: 800; color: var(--gold); }
+.priceNum { font-size: 56px; font-weight: 800; line-height: 1; color: #fff; }
+.priceUnit { font-size: 14px; color: rgba(255, 255, 255, 0.72); }
+.priceNote { font-size: 13px; color: rgba(255, 255, 255, 0.68); margin: 14px 0 22px; }
+
+/* ===================== 最後のCTA（深緑） ===================== */
+.finalCta { background: radial-gradient(120% 100% at 50% 0%, #0f4530, var(--g-darker)); padding: 64px 22px 70px; text-align: center; }
+.finalInner .btnGoldLg { margin-top: 26px; }
+.finalBrand { margin-top: 34px; font-size: 14px; font-weight: 800; letter-spacing: 0.2em; color: rgba(231, 181, 60, 0.85); }
+
+/* ===================== タブレット〜PC ===================== */
+@media (min-width: 720px) {
+  .root { margin-top: -24px; }
+  .hero {
+    background: linear-gradient(100deg, var(--white) 0 52%, var(--g-deep) 52%, var(--g-darker) 100%);
+    padding: 70px 0 80px;
+  }
+  .heroInner { flex-direction: row; text-align: left; gap: 32px; }
+  .heroInner > .heroCopy { flex: 1.05; align-items: flex-start; }
+  .heroVisual { flex: 0.95; }
+  .heroCta { justify-content: flex-start; }
+  .lead { margin-left: 0; }
+
+  .tests { padding: 80px 0 90px; }
+  .testGrid {
+    flex-direction: row; align-items: center; gap: 40px; padding: 36px 22px;
+  }
+  .testInfo { flex: 1; min-width: 0; }
+  .testShot { flex: 0 0 340px; }
+
+  .learnGrid { flex-direction: row; align-items: center; }
+  .learnCopy { flex: 1; text-align: left; }
+  .learnCopy .learnLead { margin-left: 0; }
+  .learnVisual { flex: 1; }
+  .features { padding: 78px 0; }
+  .featGrid { grid-template-columns: repeat(3, 1fr); }
+  .pricing { padding: 80px 22px; }
+  .finalCta { padding: 90px 22px 96px; }
+
+  .phoneBody { width: 270px; height: 552px; }
+}

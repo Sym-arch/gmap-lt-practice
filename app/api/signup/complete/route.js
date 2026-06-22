@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getServiceClient } from "@/lib/supabaseServer";
+import { saveSubscriptionFromSession } from "@/lib/subscriptions";
 
 export const dynamic = "force-dynamic";
 
@@ -84,15 +85,18 @@ export async function POST(req) {
     );
   }
 
-  // 購入記録（重複防止のため session_id でUPSERT）
-  await svc.from("purchases").upsert(
-    {
-      user_id: found.id,
-      product: "all_access",
-      stripe_session_id: session.id,
-    },
-    { onConflict: "stripe_session_id" }
-  );
+  // メール認証を不要化：Stripe決済を通ったユーザーは、この決済確定タイミングで
+  // 確実に email_confirmed_at を埋めてログイン可能にする（Supabaseの設定に依存しない）。
+  if (!found.email_confirmed_at && !found.confirmed_at) {
+    try {
+      await svc.auth.admin.updateUserById(found.id, { email_confirm: true });
+    } catch {
+      /* 失敗しても後続のパスワードログインで再試行される */
+    }
+  }
+
+  // サブスク契約をユーザーに紐づけて保存（以降の更新・解約は Webhook が反映する）
+  await saveSubscriptionFromSession(session, stripe, found.id);
 
   return NextResponse.json({ ok: true, email });
 }

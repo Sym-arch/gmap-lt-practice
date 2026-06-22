@@ -61,7 +61,7 @@ export async function POST(req) {
   const stripe = new Stripe(secretKey);
 
   const session = await stripe.checkout.sessions.create({
-    mode: "payment",
+    mode: "subscription",
     ui_mode: "embedded",
     redirect_on_completion: "never",
     line_items: [
@@ -69,6 +69,7 @@ export async function POST(req) {
         price_data: {
           currency: "jpy",
           unit_amount: PRICE_YEN,
+          recurring: { interval: "month" }, // 月額課金
           product_data: {
             name: SITE_NAME,
           },
@@ -77,8 +78,9 @@ export async function POST(req) {
       },
     ],
     customer_email: email,
-    payment_intent_data: {
-      receipt_email: email, // Stripeから決済完了の領収メールを送る
+    // 作成されるサブスクリプションにもメタデータを持たせ、Webhookでの突合に使う
+    subscription_data: {
+      metadata: { email, last_name, first_name, university },
     },
     metadata: {
       email,

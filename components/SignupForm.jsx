@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
@@ -14,7 +15,8 @@ const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const stripePromise = PUBLISHABLE_KEY ? loadStripe(PUBLISHABLE_KEY) : null;
 
 export default function SignupForm() {
-  const [step, setStep] = useState("form"); // form / pay / check-email
+  const router = useRouter();
+  const [step, setStep] = useState("form"); // form / pay / finalizing / check-email
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState(null);
@@ -94,6 +96,9 @@ export default function SignupForm() {
   const onCheckoutComplete = useCallback(async () => {
     setBusy(true);
     setError("");
+    // 決済完了の瞬間に全画面ローディングへ切り替え、遷移が終わるまで
+    // 途中状態の画面を見せず・他の操作もできないようにする
+    setStep("finalizing");
     try {
       const { sessionId, form: f } = dataRef.current;
       const supabase = getSupabaseBrowser();
@@ -104,7 +109,7 @@ export default function SignupForm() {
 
       const origin =
         typeof window !== "undefined" ? window.location.origin : "";
-      const { error: signErr } = await supabase.auth.signUp({
+      const { data: signData, error: signErr } = await supabase.auth.signUp({
         email: f.email.trim(),
         password: f.password,
         options: {
@@ -114,7 +119,7 @@ export default function SignupForm() {
             university: f.university.trim(),
             full_name: `${f.last_name.trim()} ${f.first_name.trim()}`.trim(),
           },
-          emailRedirectTo: `${origin}/auth/confirmed`,
+          emailRedirectTo: `${origin}/auth/confirm?next=/`,
         },
       });
       // すでに登録済みの場合（再決済など）はエラーにせず先へ
@@ -123,13 +128,37 @@ export default function SignupForm() {
         return;
       }
 
-      // 決済をアカウントに紐づけて記録（サーバー側でStripeの支払いを検証）
+      // 決済をアカウントに紐づけて記録し、サーバー側でメール認証を確定させる
+      // （/api/signup/complete が service role で email_confirm: true にする）
       await fetch("/api/signup/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId }),
       }).catch(() => {});
 
+      // すでにセッションがあればそのまま（Confirm emailがオフの場合）
+      let session =
+        signData?.session ||
+        (await supabase.auth.getSession()).data.session ||
+        null;
+
+      // セッションが無い場合は、確認済みになった前提でパスワードログインを実行
+      if (!session) {
+        const { data: signInData } = await supabase.auth.signInWithPassword({
+          email: f.email.trim(),
+          password: f.password,
+        });
+        session = signInData?.session || null;
+      }
+
+      // ログイン成功：そのままログイン状態でトップへ遷移（メール認証不要）
+      if (session) {
+        router.push("/");
+        router.refresh();
+        return;
+      }
+
+      // 念のためのフォールバック（通常ここには来ない）
       setStep("check-email");
     } catch {
       setError("通信エラーが発生しました。");
@@ -142,6 +171,27 @@ export default function SignupForm() {
     () => (clientSecret ? { clientSecret, onComplete: onCheckoutComplete } : null),
     [clientSecret, onCheckoutComplete]
   );
+
+  /* ---------- 決済完了〜ログイン後ページへ遷移するまでの全画面ローディング ----------
+     背景を不透明にして最前面に出すことで、途中経過の画面を見せず、
+     ヘッダーを含むほかの操作もできないようにする。 */
+  if (step === "finalizing") {
+    return (
+      <div className="loading-overlay">
+        {error ? (
+          <div className="card trial-end" style={{ maxWidth: 420 }}>
+            <div className="big">エラーが発生しました</div>
+            <p>{error}</p>
+            <Link href="/login" className="btn block">
+              ログイン画面へ
+            </Link>
+          </div>
+        ) : (
+          <Spinner label="ご登録を完了しています。少々お待ちください…" />
+        )}
+      </div>
+    );
+  }
 
   /* ---------- メール認証の案内画面 ---------- */
   if (step === "check-email") {

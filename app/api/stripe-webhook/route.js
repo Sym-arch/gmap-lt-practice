@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { grantPurchase } from "@/lib/purchases";
+import {
+  recordSubscriptionFromSession,
+  updateSubscriptionFromStripe,
+} from "@/lib/subscriptions";
 
 export const dynamic = "force-dynamic";
 
-/* Stripe Webhook（checkout.session.completed で購入記録を保存）。
-   成功ページ側でも付与するため、これは取りこぼし防止の保険でもある。 */
+/* Stripe Webhook（サブスクリプションのライフサイクルを subscriptions テーブルへ反映）。
+   - checkout.session.completed : 初回契約の保存（取りこぼし防止の保険）
+   - customer.subscription.updated/deleted : 更新・解約・支払い失敗による状態変化を反映
+   解約や支払い失敗で status が active/trialing でなくなると、アクセスが自動で止まる。 */
 export async function POST(req) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -24,11 +29,22 @@ export async function POST(req) {
     return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    if (session.payment_status === "paid") {
-      await grantPurchase(session);
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const session = event.data.object;
+      if (session.mode === "subscription" && session.payment_status === "paid") {
+        await recordSubscriptionFromSession(session, stripe);
+      }
+      break;
     }
+    case "customer.subscription.updated":
+    case "customer.subscription.deleted": {
+      // status（active / canceled / past_due 等）と次回更新日を反映
+      await updateSubscriptionFromStripe(event.data.object);
+      break;
+    }
+    default:
+      break;
   }
 
   return NextResponse.json({ received: true });
