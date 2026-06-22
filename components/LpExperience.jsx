@@ -96,17 +96,17 @@ const VOICES = [
   {
     school: "早稲田大学 4年",
     firm: "BCG内定",
-    text: "GMAP(LT)は対策できる教材が少なく不安でしたが、Top Firm Passのおかげで自信を持って本番に臨めました！",
+    text: "GMAP(LT)は市販の教材がほとんどなく、何から手をつければいいか分からず不安でした。Top Firm Passは出題形式そっくりの問題と解説が揃っていて、繰り返すうちに解き方の「型」が自然と身につきました。本番では時間にも余裕を持って臨め、自信を持って選考を突破できました。",
   },
   {
     school: "慶應義塾大学 4年",
     firm: "Big4内定",
-    text: "模試で自分の弱点を把握できて、効率よく対策できました。苦手だったTG-WEBも克服できました！",
+    text: "模試を受けるたびに分野別の正答率が出るので、自分の弱点がひと目で分かりました。特に苦手だったTG-WEBの図形問題も、解説で考え方を理解してから復習機能で繰り返し、しっかり克服。やみくもに対策するより圧倒的に効率的で、短期間で得点が伸びました。",
   },
   {
     school: "東京大学 4年",
-    firm: "外資コンサル内定",
-    text: "スキマ時間にサクサク進められて、忙しい就活期間でも継続して対策できました！",
+    firm: "Big4内定",
+    text: "部活と両立しながらの就活で時間が取れない中、スマホでスキマ時間にサクサク解けるのが本当に助かりました。1問ずつ丁寧な解説があるので、移動中でも理解しながら進められます。気づけば全試験を一通り対策でき、複数ファームの選考に安心して臨めました。",
   },
 ];
 
@@ -321,7 +321,7 @@ export default function LpExperience() {
           <span className={styles.kickerGold}>PLAN</span>
           {campaign?.active && (
             <div className={styles.priceCampaign}>
-              先着{campaign.limit}名 初月無料・{urgencyText(campaign.remaining)}
+              初月無料・先着{campaign.limit}名
             </div>
           )}
           <div className={styles.priceRow}>
@@ -472,13 +472,7 @@ function AppHomeFallback() {
         </div>
       ))}
 
-      <div className={styles.appNav}>
-        <span className={styles.appNavOn}>ホーム</span>
-        <span>学習</span>
-        <span>模試</span>
-        <span>分析</span>
-        <span>マイ</span>
-      </div>
+      <div className={styles.appCta}>今日の模試を始める</div>
     </div>
   );
 }
