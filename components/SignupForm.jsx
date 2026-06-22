@@ -14,17 +14,28 @@ import { getSupabaseBrowser } from "@/lib/supabaseBrowser";
 const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
 const stripePromise = PUBLISHABLE_KEY ? loadStripe(PUBLISHABLE_KEY) : null;
 
-/* Meta（Facebook）ピクセルへコンバージョンを送信。
-   - 初月無料（トライアル）：StartTrial
-   - 通常登録：Subscribe
-   いずれも会員登録の完了として CompleteRegistration も送る。 */
+/* 会員登録完了時のコンバージョン送信。
+   Metaはブラウザのピクセルのみ（CAPI・個人情報のハッシュ送信は使わない）。
+   ブラウザのピクセルでも、広告クリック由来のクッキーで
+   クリエイティブ別のCV計測は自動で行われる。 */
 function trackConversion(isTrial) {
-  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
-  window.fbq("track", "CompleteRegistration");
-  if (isTrial) {
-    window.fbq("track", "StartTrial", { value: 0, currency: "JPY" });
-  } else {
-    window.fbq("track", "Subscribe", { value: 1480, currency: "JPY" });
+  if (typeof window === "undefined") return;
+  // Meta（Facebook）ピクセル
+  if (typeof window.fbq === "function") {
+    window.fbq("track", "CompleteRegistration");
+    window.fbq(
+      "track",
+      isTrial ? "StartTrial" : "Subscribe",
+      { value: isTrial ? 0 : 1480, currency: "JPY" }
+    );
+  }
+  // GA4（CVR算出用のキーイベント）
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "sign_up", {
+      method: isTrial ? "trial" : "paid",
+      value: isTrial ? 0 : 1480,
+      currency: "JPY",
+    });
   }
 }
 

@@ -6,8 +6,8 @@ import GAListener from "@/components/GAListener";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
 const GA_ID = "G-SZWJXFZFBS";
-// Meta（Facebook）ピクセルID。Vercel等の環境変数 NEXT_PUBLIC_META_PIXEL_ID に設定すると有効化。
-const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+// Meta（Facebook）ピクセルID（公開情報。コードに直接埋め込み）
+const META_PIXEL_ID = "1374111384591173";
 
 export const metadata = {
   title: `${SITE_NAME}｜${SITE_TAGLINE}`,

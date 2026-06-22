@@ -17,8 +17,9 @@
   --ink: #0e1512;
   --white: #f6f8f6;
   --cream: #edf3ef;
-  --gold: #e7b53c;
-  --gold-soft: #f3d784;
+  --gold: #cda53f;
+  --gold-soft: #dcbb63;
+  --gold-deep: #a07f29;
   --head: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
 
   color: var(--ink);
@@ -54,7 +55,19 @@
 .h1 em { font-style: normal; color: var(--g); position: relative; }
 .h1 em::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0.06em;
-  height: 0.18em; background: var(--gold); opacity: 0.55; z-index: -1;
+  height: 0.18em; background: var(--gold); opacity: 0.7; z-index: -1;
+  transform-origin: right center;
+  animation: ulReplay 2.1s ease 0.7s both;
+}
+@keyframes ulReplay {
+  0% { transform: scaleX(1); }
+  22% { transform: scaleX(1); }
+  38% { transform: scaleX(0); }
+  48% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .h1 em::after { animation: none; transform: scaleX(1); }
 }
 .h2Light, .h2Dark {
   font-family: var(--head); font-weight: 800;
@@ -70,20 +83,32 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 .btnGold, .btnGoldLg {
-  background: var(--gold); color: var(--ink); font-size: 15px; padding: 14px 24px;
-  box-shadow: 0 10px 24px rgba(231, 181, 60, 0.32);
+  background: var(--gold); color: #2a2410; font-size: 15px; padding: 14px 24px;
+  box-shadow: 0 4px 14px rgba(20, 45, 33, 0.12);
 }
-.btnGold:hover, .btnGoldLg:hover { transform: translateY(-2px); background: var(--gold-soft); }
+.btnGold:hover, .btnGoldLg:hover {
+  transform: translateY(-1px); background: var(--gold-soft);
+  box-shadow: 0 6px 18px rgba(20, 45, 33, 0.16);
+}
 .btnGoldLg { font-size: 16px; padding: 16px 30px; }
 .btnGhost {
   font-size: 14px; color: var(--g-deep);
   padding: 12px 18px; border: 1.5px solid rgba(12, 58, 42, 0.25);
 }
 .btnGhost:hover { background: rgba(12, 58, 42, 0.06); border-color: var(--g); }
+/* 各試験の「試してみる」：ファームチップ（深緑塗り）と区別できる白地・緑枠 */
 .btnTest {
-  background: var(--g-deep); color: #fff; font-size: 14px; padding: 13px 22px; margin-top: 18px;
+  display: flex;
+  width: 100%;
+  max-width: 360px;
+  margin: 14px auto 0;
+  background: #fff;
+  color: var(--g-deep);
+  font-size: 14.5px;
+  padding: 13px 22px;
+  border: 1.8px solid var(--g);
 }
-.btnTest:hover { background: var(--g); transform: translateX(2px); }
+.btnTest:hover { background: var(--g); color: #fff; transform: translateY(-1px); }
 
 /* ===================== キャンペーン告知バー ===================== */
 .campaignBar {
@@ -163,24 +188,40 @@
 .phoneImg { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
 
 /* スクショ未配置時のアプリ再現 */
-.appHome { height: 100%; background: linear-gradient(180deg, #f7faf8, #eaf0ec); padding: 40px 12px 14px; }
-.appBar { display: flex; align-items: center; gap: 7px; font-weight: 800; font-size: 13px; color: var(--g-deep); padding: 4px 6px 12px; }
-.appDot { width: 16px; height: 16px; border-radius: 5px; background: var(--g); }
+.appHome { height: 100%; display: flex; flex-direction: column; background: linear-gradient(180deg, #f7faf8, #eef3ef); padding: 38px 11px 6px; }
+.appBar { display: flex; align-items: center; gap: 7px; font-weight: 800; font-size: 12.5px; color: var(--g-deep); padding: 2px 4px 10px; }
+.appDot { width: 15px; height: 15px; border-radius: 5px; background: var(--g); }
+
+.appToday { background: #fff; border: 1px solid #e2e9e4; border-radius: 13px; padding: 11px 12px; margin-bottom: 12px; box-shadow: 0 3px 9px rgba(12,58,42,0.05); }
+.appTodayTop { display: flex; justify-content: space-between; align-items: baseline; font-size: 11.5px; font-weight: 800; color: var(--ink); }
+.appTodayNum { color: var(--g); font-size: 15px; }
+.appTodayNum small { font-size: 10px; color: #76837c; font-weight: 700; }
+.appBar2 { height: 7px; background: #e3e9e4; border-radius: 999px; overflow: hidden; margin: 8px 0 5px; }
+.appBar2 > span { display: block; height: 100%; background: var(--g); border-radius: 999px; }
+.appTodaySub { font-size: 10px; color: #76837c; font-weight: 700; text-align: right; }
+
+.appSecLabel { font-size: 10.5px; font-weight: 800; color: var(--g-deep); padding: 2px 4px 7px; }
+
 .appCard {
-  display: flex; align-items: center; justify-content: space-between;
-  background: #fff; border: 1px solid #e2e9e4; border-left: 4px solid var(--g);
-  border-radius: 13px; padding: 12px; margin-bottom: 10px;
-  box-shadow: 0 3px 9px rgba(12,58,42,0.05);
-  opacity: 0; animation: cardIn 0.5s ease forwards; animation-delay: calc(var(--n) * 0.1s);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: #fff; border: 1px solid #e2e9e4;
+  border-radius: 12px; padding: 10px 11px; margin-bottom: 8px;
+  box-shadow: 0 2px 7px rgba(12,58,42,0.05);
+  opacity: 0; animation: cardIn 0.5s ease forwards; animation-delay: calc(var(--n) * 0.1s + 0.2s);
 }
-.appCard:nth-child(3) { border-left-color: #136d62; }
-.appCard:nth-child(4) { border-left-color: #3c8d4f; }
-.appCard:nth-child(5) { border-left-color: #0d5a3c; }
 @keyframes cardIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 @media (prefers-reduced-motion: reduce) { .appCard { opacity: 1; animation: none; } }
-.appCardName { font-weight: 800; font-size: 13.5px; color: var(--ink); }
-.appCardTag { font-size: 10px; color: #76837c; margin-top: 2px; }
-.appBadge { font-size: 9.5px; font-weight: 800; color: var(--g-deep); background: #e3efe9; padding: 4px 8px; border-radius: 999px; }
+.appCardL { display: flex; align-items: center; gap: 9px; flex: 1; min-width: 0; }
+.appCardDot { width: 9px; height: 9px; border-radius: 50%; background: var(--g); flex-shrink: 0; }
+.appCardBody { flex: 1; min-width: 0; }
+.appCardName { font-weight: 800; font-size: 12.5px; color: var(--ink); }
+.appMini { height: 5px; background: #e3e9e4; border-radius: 999px; overflow: hidden; margin-top: 5px; }
+.appMini > span { display: block; height: 100%; background: var(--g); border-radius: 999px; }
+.appPct { font-size: 11.5px; font-weight: 800; color: var(--g); flex-shrink: 0; }
+
+.appNav { margin-top: auto; display: flex; justify-content: space-between; border-top: 1px solid #e2e9e4; padding: 8px 6px 2px; }
+.appNav > span { font-size: 9px; color: #9aa6a0; font-weight: 700; }
+.appNavOn { color: var(--g); }
 
 /* ===================== テスト × ファーム × 実問題 ===================== */
 .tests { background: var(--white); padding: 50px 0 60px; }
@@ -214,7 +255,7 @@
 .chip { font-size: 12.5px; font-weight: 800; color: #fff; background: var(--g-deep); padding: 6px 13px; border-radius: 999px; }
 
 /* 実問題の“アプリ画面風”カード */
-.testShot { display: flex; justify-content: center; }
+.testShot { display: flex; flex-direction: column; align-items: center; }
 .shotFrame {
   width: 100%; max-width: 360px;
   background: #fff; border: 1px solid #dde5df; border-radius: 22px; overflow: hidden;
@@ -278,6 +319,27 @@
 .featT { font-size: 16.5px; font-weight: 800; color: #fff; margin: 0 0 6px; }
 .featD { font-size: 13px; color: rgba(234, 243, 238, 0.74); margin: 0; }
 
+/* ===================== 利用者の声 ===================== */
+.voices { background: var(--cream); padding: 56px 0; }
+.voiceGrid {
+  max-width: 1000px; margin: 0 auto; padding: 0 22px;
+  display: grid; grid-template-columns: 1fr; gap: 14px;
+}
+.voiceCard {
+  background: #fff; border: 1px solid var(--color-border, rgba(12,58,42,0.1));
+  border-radius: 16px; padding: 20px; margin: 0;
+  box-shadow: 0 6px 18px rgba(12, 58, 42, 0.06);
+}
+.voiceHead { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.voiceAvatar { flex-shrink: 0; line-height: 0; }
+.voiceHead figcaption { display: flex; flex-direction: column; }
+.voiceSchool { font-size: 13.5px; font-weight: 800; color: var(--ink); }
+.voiceFirm { font-size: 12px; font-weight: 700; color: var(--g); }
+.voiceText {
+  margin: 0; font-size: 13.5px; line-height: 1.8; color: #36433c;
+  position: relative; padding-top: 4px;
+}
+
 /* ===================== 料金（白） ===================== */
 .pricing { background: var(--white); padding: 56px 22px; }
 .priceCard {
@@ -323,6 +385,8 @@
   .learnVisual { flex: 1; }
   .features { padding: 78px 0; }
   .featGrid { grid-template-columns: repeat(3, 1fr); }
+  .voices { padding: 78px 0; }
+  .voiceGrid { grid-template-columns: repeat(3, 1fr); align-items: start; }
   .pricing { padding: 80px 22px; }
   .finalCta { padding: 90px 22px 96px; }
 

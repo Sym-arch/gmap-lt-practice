@@ -84,6 +84,32 @@ const TESTS = [
 const FREE_HREF = "/exams/gmap";
 const MARKS = ["ア", "イ", "ウ", "エ", "オ"];
 
+/* 残り枠に応じた煽り文言 */
+function urgencyText(remaining) {
+  if (remaining <= 10) return `残りわずか${remaining}名！`;
+  if (remaining <= 30) return "残りわずか・お早めに";
+  return "枠が埋まり次第終了";
+}
+
+/* 利用者の声 */
+const VOICES = [
+  {
+    school: "早稲田大学 4年",
+    firm: "BCG内定",
+    text: "GMAP(LT)は対策できる教材が少なく不安でしたが、Top Firm Passのおかげで自信を持って本番に臨めました！",
+  },
+  {
+    school: "慶應義塾大学 4年",
+    firm: "Big4内定",
+    text: "模試で自分の弱点を把握できて、効率よく対策できました。苦手だったTG-WEBも克服できました！",
+  },
+  {
+    school: "東京大学 4年",
+    firm: "外資コンサル内定",
+    text: "スキマ時間にサクサク進められて、忙しい就活期間でも継続して対策できました！",
+  },
+];
+
 export default function LpExperience() {
   const rootRef = useRef(null);
   const [campaign, setCampaign] = useState(null);
@@ -119,9 +145,9 @@ export default function LpExperience() {
       {/* ===== キャンペーン告知バー ===== */}
       {campaign?.active && (
         <a href="/signup" className={styles.campaignBar}>
-          <span className={styles.campaignTag}>先着{campaign.limit}名</span>
+          <span className={styles.campaignTag}>先着{campaign.limit}名限定</span>
           初月無料キャンペーン実施中
-          <span className={styles.campaignRemain}>残り{campaign.remaining}名</span>
+          <span className={styles.campaignRemain}>{urgencyText(campaign.remaining)}</span>
         </a>
       )}
 
@@ -212,15 +238,14 @@ export default function LpExperience() {
                       ))}
                     </div>
                   </div>
-
-                  <Link href={t.href} className={styles.btnTest}>
-                    {t.name}を試してみる
-                    <Arrow small />
-                  </Link>
                 </div>
 
                 <div className={styles.testShot}>
                   <QuizShot test={t} />
+                  <Link href={t.href} className={styles.btnTest}>
+                    {t.name}を試してみる
+                    <Arrow small />
+                  </Link>
                 </div>
               </div>
             </article>
@@ -261,13 +286,42 @@ export default function LpExperience() {
         </div>
       </section>
 
+      {/* ===== 利用者の声 ===== */}
+      <section className={styles.voices}>
+        <header className={styles.sectionHead} data-reveal>
+          <span className={styles.kicker}>VOICES</span>
+          <h2 className={styles.h2Dark}>利用者の声</h2>
+        </header>
+        <div className={styles.voiceGrid}>
+          {VOICES.map((v, i) => (
+            <figure
+              className={styles.voiceCard}
+              key={i}
+              data-reveal
+              style={{ transitionDelay: `${i * 70}ms` }}
+            >
+              <div className={styles.voiceHead}>
+                <span className={styles.voiceAvatar}>
+                  <Avatar />
+                </span>
+                <figcaption>
+                  <span className={styles.voiceSchool}>{v.school}</span>
+                  <span className={styles.voiceFirm}>{v.firm}</span>
+                </figcaption>
+              </div>
+              <blockquote className={styles.voiceText}>{v.text}</blockquote>
+            </figure>
+          ))}
+        </div>
+      </section>
+
       {/* ===== 料金 ===== */}
       <section className={styles.pricing}>
         <div className={styles.priceCard} data-reveal>
           <span className={styles.kickerGold}>PLAN</span>
           {campaign?.active && (
             <div className={styles.priceCampaign}>
-              先着{campaign.limit}名 初月無料（残り{campaign.remaining}名）
+              先着{campaign.limit}名 初月無料・{urgencyText(campaign.remaining)}
             </div>
           )}
           <div className={styles.priceRow}>
@@ -379,24 +433,64 @@ function PhoneShot({ src, alt, fallback }) {
   );
 }
 
-/* スクショ未配置時の代替：アプリのホーム（試験一覧）を再現 */
+/* スクショ未配置時の代替：アプリのホーム（学習プラン）を再現 */
+const APP_PROGRESS = { gmap: 72, tgweb: 65, tamatebako: 58, spi3: 40 };
 function AppHomeFallback() {
   return (
     <div className={styles.appHome}>
       <div className={styles.appBar}>
         <span className={styles.appDot} />
-        Top Firm Pass
+        学習プラン
       </div>
+
+      <div className={styles.appToday}>
+        <div className={styles.appTodayTop}>
+          <span>今日の学習</span>
+          <span className={styles.appTodayNum}>
+            120<small> / 200問</small>
+          </span>
+        </div>
+        <div className={styles.appBar2}>
+          <span style={{ width: "60%" }} />
+        </div>
+        <div className={styles.appTodaySub}>達成率 60%</div>
+      </div>
+
+      <div className={styles.appSecLabel}>試験別対策</div>
       {TESTS.map((t, i) => (
         <div className={styles.appCard} key={t.id} style={{ "--n": i }}>
-          <div>
-            <div className={styles.appCardName}>{t.name}</div>
-            <div className={styles.appCardTag}>{t.tag}</div>
+          <div className={styles.appCardL}>
+            <span className={styles.appCardDot} />
+            <div className={styles.appCardBody}>
+              <div className={styles.appCardName}>{t.name}</div>
+              <div className={styles.appMini}>
+                <span style={{ width: `${APP_PROGRESS[t.id]}%` }} />
+              </div>
+            </div>
           </div>
-          <span className={styles.appBadge}>全10回</span>
+          <span className={styles.appPct}>{APP_PROGRESS[t.id]}%</span>
         </div>
       ))}
+
+      <div className={styles.appNav}>
+        <span className={styles.appNavOn}>ホーム</span>
+        <span>学習</span>
+        <span>模試</span>
+        <span>分析</span>
+        <span>マイ</span>
+      </div>
     </div>
+  );
+}
+
+/* 利用者の声のアバター（汎用の人物アイコン） */
+function Avatar() {
+  return (
+    <svg width="44" height="44" viewBox="0 0 48 48" fill="none" aria-hidden>
+      <circle cx="24" cy="24" r="24" fill="#e3efe9" />
+      <circle cx="24" cy="19" r="8" fill="#15734e" />
+      <path d="M10 41c2.4-8 9-12 14-12s11.6 4 14 12z" fill="#15734e" />
+    </svg>
   );
 }
 
