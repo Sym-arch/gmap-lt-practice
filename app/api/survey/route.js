@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabaseServer";
+import { getServiceClient } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
@@ -64,5 +65,16 @@ export async function POST(req) {
     .upsert(payload, { onConflict: "user_id" });
 
   if (error) return NextResponse.json({ ok: false, reason: error.message }, { status: 500 });
+
+  // アンケート回答完了 → subscriptions.survey_completed = true（service role で更新）
+  const svc = getServiceClient();
+  if (svc) {
+    await svc
+      .from("subscriptions")
+      .update({ survey_completed: true })
+      .eq("user_id", user.id)
+      .catch(() => {});
+  }
+
   return NextResponse.json({ ok: true });
 }
