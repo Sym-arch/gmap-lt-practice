@@ -123,13 +123,26 @@ export default function SignupForm() {
     const supabase = getSupabaseBrowser();
     if (!supabase) return;
     setBusy(true);
-    // ?oauth=1 を付けることで、リダイレクトバック後に「OAuthからの帰還」と識別する
-    const redirectTo =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/signup?oauth=1`
-        : undefined;
-    await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
-    setBusy(false);
+    setError("");
+    try {
+      // ?oauth=1 を付けることで、リダイレクトバック後に「OAuthからの帰還」と識別する
+      const redirectTo =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/signup?oauth=1`
+          : undefined;
+      const { error: oauthErr } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+      if (oauthErr) {
+        setError("Googleログインに失敗しました：" + oauthErr.message);
+        setBusy(false);
+      }
+      // エラーなければブラウザがGoogleへリダイレクトするため、ここには到達しない
+    } catch {
+      setError("通信エラーが発生しました。");
+      setBusy(false);
+    }
   }
 
   function setField(k, v) {
