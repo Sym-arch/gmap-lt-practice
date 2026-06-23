@@ -97,25 +97,85 @@ function RadioGroup({ name, options, value, onChange }) {
   );
 }
 
-/* ---- モニタープラン終了 CTA ---- */
-function BillingPortalSection({ busy, error, onOpen }) {
-  return (
-    <div className="card survey-portal-card">
-      <h2>③ プランの変更・解約</h2>
-      <p className="subtitle">
-        モニタープランのトライアル期間終了後は、自動的に通常プランへ移行します。
-        今すぐ変更・解約する場合は、カスタマーポータルからお手続きください。
+/* ---- モニタープラン辞退リンク（インライン） ---- */
+function EndTrialLink() {
+  const [state, setState] = useState("idle"); // idle | confirm | processing | done | error
+  const [errMsg, setErrMsg] = useState("");
+
+  async function endTrial() {
+    setState("processing");
+    try {
+      const res = await fetch("/api/billing/end-trial", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setErrMsg(data.error || "処理に失敗しました。");
+        setState("error");
+        return;
+      }
+      setState("done");
+    } catch {
+      setErrMsg("通信エラーが発生しました。");
+      setState("error");
+    }
+  }
+
+  if (state === "done") {
+    return (
+      <p style={{ fontSize: 13, color: "var(--ok)", marginTop: 4 }}>
+        ✓ 通常プランに変更されました。次回請求日から月額料金が発生します。
       </p>
-      <button
-        type="button"
-        className="btn block survey-portal-btn"
-        onClick={onOpen}
-        disabled={busy}
-      >
-        {busy ? "準備中…" : "モニタープランを終了して、通常プランに戻る"}
-      </button>
-      {error && <div className="error-box" style={{ marginTop: 12 }}>{error}</div>}
-    </div>
+    );
+  }
+  if (state === "error") {
+    return (
+      <p style={{ fontSize: 13, color: "var(--ng)", marginTop: 4 }}>
+        {errMsg}
+        <button
+          type="button"
+          onClick={() => setState("idle")}
+          style={{ marginLeft: 8, color: "var(--brand)", background: "none", border: "none", cursor: "pointer", fontSize: 13, textDecoration: "underline" }}
+        >
+          やり直す
+        </button>
+      </p>
+    );
+  }
+  if (state === "confirm") {
+    return (
+      <p style={{ fontSize: 13, marginTop: 4, color: "var(--ink)" }}>
+        今すぐ月額¥1,480の課金が開始されます。よろしいですか？
+        <button
+          type="button"
+          onClick={endTrial}
+          style={{ marginLeft: 10, color: "var(--ng)", background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700, textDecoration: "underline" }}
+        >
+          変更する
+        </button>
+        <button
+          type="button"
+          onClick={() => setState("idle")}
+          style={{ marginLeft: 8, color: "var(--ink-soft)", background: "none", border: "none", cursor: "pointer", fontSize: 13, textDecoration: "underline" }}
+        >
+          キャンセル
+        </button>
+      </p>
+    );
+  }
+  if (state === "processing") {
+    return <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 4 }}>処理中…</p>;
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setState("confirm")}
+      style={{
+        background: "none", border: "none", cursor: "pointer",
+        color: "var(--ink-soft)", fontSize: 13,
+        textDecoration: "underline", padding: 0, marginTop: 6,
+      }}
+    >
+      モニタープランを辞退（通常プランに変更）
+    </button>
   );
 }
 
@@ -128,8 +188,6 @@ export default function SurveyForm() {
   const [form, setForm] = useState(INIT);
   const [submitState, setSubmitState] = useState("idle"); // idle | submitting | done | error
   const [error, setError] = useState("");
-  const [portalBusy, setPortalBusy] = useState(false);
-  const [portalError, setPortalError] = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -188,24 +246,6 @@ export default function SurveyForm() {
     }
   }
 
-  async function openPortal() {
-    setPortalBusy(true);
-    setPortalError("");
-    try {
-      const res = await fetch("/api/billing/portal", { method: "POST" });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        setPortalError(data.error || "ポータルを開けませんでした。");
-      }
-    } catch {
-      setPortalError("通信エラーが発生しました。");
-    } finally {
-      setPortalBusy(false);
-    }
-  }
-
   /* ---- ローディング ---- */
   if (loading) {
     return <div className="card"><Spinner /></div>;
@@ -225,16 +265,13 @@ export default function SurveyForm() {
   /* ---- 送信完了 ---- */
   if (submitState === "done") {
     return (
-      <div>
-        <div className="card trial-end">
-          <div className="big">ありがとうございました！</div>
-          <p>
-            ご回答いただきありがとうございます。<br />
-            いただいたご意見を参考に、サービスをより良くしてまいります。
-          </p>
-          <Link href="/" className="btn block">トップへ戻る</Link>
-        </div>
-        <BillingPortalSection busy={portalBusy} error={portalError} onOpen={openPortal} />
+      <div className="card trial-end">
+        <div className="big">ありがとうございました！</div>
+        <p>
+          ご回答いただきありがとうございます。<br />
+          いただいたご意見を参考に、サービスをより良くしてまいります。
+        </p>
+        <Link href="/" className="btn block">トップへ戻る</Link>
       </div>
     );
   }
@@ -242,19 +279,16 @@ export default function SurveyForm() {
   /* ---- 回答済み（編集前） ---- */
   if (existing && !editing) {
     return (
-      <div>
-        <div className="card trial-end">
-          <div className="big">回答済みです</div>
-          <p>
-            {new Date(existing.updated_at).toLocaleDateString("ja-JP")} に回答済みです。<br />
-            内容を変更したい場合は「編集する」からご修正いただけます。
-          </p>
-          <button className="btn block" onClick={() => setEditing(true)}>回答を編集する</button>
-          <Link href="/" className="link-btn" style={{ display: "block", marginTop: 10, textAlign: "center" }}>
-            トップへ戻る
-          </Link>
-        </div>
-        <BillingPortalSection busy={portalBusy} error={portalError} onOpen={openPortal} />
+      <div className="card trial-end">
+        <div className="big">回答済みです</div>
+        <p>
+          {new Date(existing.updated_at).toLocaleDateString("ja-JP")} に回答済みです。<br />
+          内容を変更したい場合は「編集する」からご修正いただけます。
+        </p>
+        <button className="btn block" onClick={() => setEditing(true)}>回答を編集する</button>
+        <Link href="/" className="link-btn" style={{ display: "block", marginTop: 10, textAlign: "center" }}>
+          トップへ戻る
+        </Link>
       </div>
     );
   }
@@ -266,9 +300,10 @@ export default function SurveyForm() {
         {existing ? "回答内容を編集しています。" : "ご利用ありがとうございます。"}
         アンケートへのご協力をお願いします（所要時間：約3分）。
       </p>
+      <EndTrialLink />
 
       {/* ===== セクション1: アプリの使用感 ===== */}
-      <div className="card" style={{ marginBottom: 16 }}>
+      <div className="card" style={{ marginBottom: 16, marginTop: 20 }}>
         <h2>① アプリの使用感について</h2>
         <p className="subtitle" style={{ marginBottom: 20 }}>
           各項目を1〜5で評価してください（1＝よくない、5＝とても良い）。
@@ -415,15 +450,11 @@ export default function SurveyForm() {
         type="submit"
         className="btn block"
         disabled={submitState === "submitting"}
-        style={{ marginBottom: 24 }}
       >
         {submitState === "submitting"
           ? "送信中…"
           : existing ? "回答を更新する" : "アンケートを送信する"}
       </button>
-
-      {/* ===== セクション3: プランの変更・解約 ===== */}
-      <BillingPortalSection busy={portalBusy} error={portalError} onOpen={openPortal} />
     </form>
   );
 }

@@ -1093,11 +1093,6 @@ h2 { font-size: 17px; margin: 0 0 12px; }
   vertical-align: middle;
 }
 
-/* モニタープラン解約 CTA */
-.survey-portal-card { margin-bottom: 32px; }
-.survey-portal-btn { background: var(--ink) !important; color: #fff !important; }
-.survey-portal-btn:hover:not(:disabled) { background: #3a4a41 !important; }
-
 /* サインアップ3日後リマインダーバナー */
 .survey-banner {
   display: flex;
