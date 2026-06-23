@@ -47,7 +47,7 @@ export default function SignupForm() {
     password: "",
   });
 
-  const dataRef = useRef({ sessionId: null, trial: false, isOAuth: false, form });
+  const dataRef = useRef({ sessionId: null, trial: false, form });
   dataRef.current.form = form;
 
   // キャンペーン状況を取得
@@ -57,93 +57,6 @@ export default function SignupForm() {
       .then(setCampaign)
       .catch(() => setCampaign({ active: false }));
   }, []);
-
-  // Google OAuth でリダイレクトバックした場合のみ検知（?oauth=1 が付いているときだけ）
-  useEffect(() => {
-    const isOAuthReturn =
-      typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).has("oauth");
-    if (!isOAuthReturn) return;
-
-    const supabase = getSupabaseBrowser();
-    if (!supabase) return;
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session?.user) return;
-
-      // 既にサブスク済みならホームへ
-      const me = await fetch("/api/me")
-        .then((r) => r.json())
-        .catch(() => ({ premium: false }));
-      if (me.premium) {
-        window.location.href = "/";
-        return;
-      }
-
-      // 未サブスクのOAuthユーザー → Stripe決済へ自動遷移
-      await startPayForOAuthUser(session.user);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function startPayForOAuthUser(user) {
-    setBusy(true);
-    setError("");
-    try {
-      const meta = user.user_metadata || {};
-      const res = await fetch("/api/signup/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          last_name:  meta.family_name || meta.last_name  || "",
-          first_name: meta.given_name  || meta.first_name || meta.name || user.email,
-          email:      user.email,
-          isOAuth:    true,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        if (res.status === 409) { window.location.href = "/"; return; }
-        setError(data.error || "お手続きを開始できませんでした。");
-        return;
-      }
-      dataRef.current.sessionId = data.sessionId;
-      dataRef.current.trial     = data.trial;
-      dataRef.current.isOAuth   = true;
-      setClientSecret(data.clientSecret);
-      setStep("pay");
-    } catch {
-      setError("通信エラーが発生しました。");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function loginWithGoogle() {
-    const supabase = getSupabaseBrowser();
-    if (!supabase) return;
-    setBusy(true);
-    setError("");
-    try {
-      // ?oauth=1 を付けることで、リダイレクトバック後に「OAuthからの帰還」と識別する
-      const redirectTo =
-        typeof window !== "undefined"
-          ? `${window.location.origin}/signup?oauth=1`
-          : undefined;
-      const { error: oauthErr } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo },
-      });
-      if (oauthErr) {
-        setError("Googleログインに失敗しました：" + oauthErr.message);
-        setBusy(false);
-      }
-      // エラーなければブラウザがGoogleへリダイレクトするため、ここには到達しない
-    } catch {
-      setError("通信エラーが発生しました。");
-      setBusy(false);
-    }
-  }
 
   function setField(k, v) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -182,7 +95,6 @@ export default function SignupForm() {
       }
       dataRef.current.sessionId = data.sessionId;
       dataRef.current.trial     = data.trial;
-      dataRef.current.isOAuth   = false;
       setClientSecret(data.clientSecret);
       setStep("pay");
     } catch {
@@ -197,33 +109,29 @@ export default function SignupForm() {
     setError("");
     setStep("finalizing");
     try {
-      const { sessionId, form: f, isOAuth } = dataRef.current;
+      const { sessionId, form: f } = dataRef.current;
       const supabase = getSupabaseBrowser();
       if (!supabase) {
         setError("認証機能が未設定です。管理者にお問い合わせください。");
         return;
       }
 
-      // Google OAuth ユーザーはすでにログイン済みなので signUp 不要
-      let session = null;
-      if (!isOAuth) {
-        const { data: signData, error: signErr } = await supabase.auth.signUp({
-          email:    f.email.trim(),
-          password: f.password,
-          options: {
-            data: {
-              last_name:  f.last_name.trim(),
-              first_name: f.first_name.trim(),
-              full_name: `${f.last_name.trim()} ${f.first_name.trim()}`.trim(),
-            },
+      const { data: signData, error: signErr } = await supabase.auth.signUp({
+        email:    f.email.trim(),
+        password: f.password,
+        options: {
+          data: {
+            last_name:  f.last_name.trim(),
+            first_name: f.first_name.trim(),
+            full_name: `${f.last_name.trim()} ${f.first_name.trim()}`.trim(),
           },
-        });
-        if (signErr && !/already|registered|exists/i.test(signErr.message)) {
-          setError("アカウント作成に失敗しました：" + signErr.message);
-          return;
-        }
-        session = signData?.session || null;
+        },
+      });
+      if (signErr && !/already|registered|exists/i.test(signErr.message)) {
+        setError("アカウント作成に失敗しました：" + signErr.message);
+        return;
       }
+      let session = signData?.session || null;
 
       // 決済をアカウントに紐づけて保存
       await fetch("/api/signup/complete", {
@@ -232,11 +140,11 @@ export default function SignupForm() {
         body:    JSON.stringify({ sessionId }),
       }).catch(() => {});
 
-      // セッションを確保（OAuthはすでに持っている）
+      // セッションを確保
       if (!session) {
         session = (await supabase.auth.getSession()).data.session || null;
       }
-      if (!session && !isOAuth) {
+      if (!session) {
         const { data: signInData } = await supabase.auth.signInWithPassword({
           email:    f.email.trim(),
           password: f.password,
@@ -244,7 +152,7 @@ export default function SignupForm() {
         session = signInData?.session || null;
       }
 
-      if (session || isOAuth) {
+      if (session) {
         trackConversion(dataRef.current.trial);
         window.location.href = "/";
         return;
@@ -325,15 +233,13 @@ export default function SignupForm() {
           <div className="card"><Spinner /></div>
         )}
         {error && <div className="error-box" style={{ marginTop: 12 }}>{error}</div>}
-        {!dataRef.current.isOAuth && (
-          <button
-            type="button"
-            className="link-btn"
-            onClick={() => { setStep("form"); setClientSecret(null); }}
-          >
-            入力内容を修正する
-          </button>
-        )}
+        <button
+          type="button"
+          className="link-btn"
+          onClick={() => { setStep("form"); setClientSecret(null); }}
+        >
+          入力内容を修正する
+        </button>
       </div>
     );
   }
@@ -361,21 +267,6 @@ export default function SignupForm() {
           : "ご登録後すぐに学習を始められます。"}
       </div>
 
-      {/* Google でサインアップ */}
-      <div className="card" style={{ marginBottom: 14 }}>
-        <button
-          type="button"
-          className="btn-google"
-          onClick={loginWithGoogle}
-          disabled={busy}
-        >
-          <GoogleIcon />
-          Google アカウントで登録
-        </button>
-        <div className="divider-or"><span>または</span></div>
-      </div>
-
-      {/* メール・パスワードでサインアップ */}
       <div className="card">
         <h2>① 個人情報</h2>
         <div className="field-row">
@@ -437,16 +328,5 @@ export default function SignupForm() {
         すでにアカウントをお持ちの方は <Link href="/login">こちらからログイン</Link>
       </div>
     </form>
-  );
-}
-
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-      <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-      <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-      <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
-    </svg>
   );
 }
