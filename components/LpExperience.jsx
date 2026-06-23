@@ -354,6 +354,12 @@ export default function LpExperience() {
           <div className={styles.finalBrand}>{SITE_NAME}</div>
         </div>
       </section>
+
+      {/* ===== Meta広告設定用の管理情報 ===== */}
+      <div style={{ textAlign: "center", padding: "14px 16px 10px", fontSize: 11.5, color: "#8a9a90", background: "#edf3ef" }}>
+        Meta Pixel ID：<span style={{ fontFamily: "monospace", letterSpacing: "0.08em", color: "#15734e", fontWeight: 700 }}>1374111384591173</span>
+        　／　CV イベント：<span style={{ fontFamily: "monospace", color: "#15734e", fontWeight: 700 }}>CompleteRegistration</span>（登録完了時に自動送信）
+      </div>
     </div>
   );
 }
