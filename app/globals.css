@@ -884,6 +884,46 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 .auth-divider::after { right: 0; }
 .auth-divider span { background: var(--card); padding: 0 8px; position: relative; }
 
+/* Google ログイン/登録ボタン */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: 1.5px solid #dadce0;
+  border-radius: 8px;
+  background: #fff;
+  color: #3c4043;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.btn-google:hover:not(:disabled) {
+  background: #f8f9fa;
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+.btn-google:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* 「または」区切り線 */
+.divider-or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 4px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+.divider-or::before,
+.divider-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 .auth-foot {
   text-align: center;
   font-size: 13px;

@@ -7,9 +7,8 @@ import { isCampaignOpen, CAMPAIGN_TRIAL_DAYS } from "@/lib/subscriptions";
 export const dynamic = "force-dynamic";
 
 /* POST /api/signup/start
-   body: { full_name, furigana, university, email }
-   Stripe Embedded Checkout のセッションを作成し、clientSecret を返す。
-   ※ パスワードはこの時点では受け取らず、完了APIで受け取って auth.users 作成時に使う。 */
+   body: { last_name, first_name, email }
+   Stripe Embedded Checkout のセッションを作成し、clientSecret を返す。 */
 export async function POST(req) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
@@ -26,12 +25,11 @@ export async function POST(req) {
     return NextResponse.json({ error: "不正なリクエストです。" }, { status: 400 });
   }
 
-  const last_name = String(body.last_name || "").trim();
+  const last_name  = String(body.last_name  || "").trim();
   const first_name = String(body.first_name || "").trim();
-  const university = String(body.university || "").trim();
-  const email = String(body.email || "").trim();
+  const email      = String(body.email      || "").trim();
 
-  if (!last_name || !first_name || !university || !email) {
+  if (!first_name || !email) {
     return NextResponse.json({ error: "必須項目が未入力です。" }, { status: 400 });
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -65,7 +63,7 @@ export async function POST(req) {
   const stripe = new Stripe(secretKey);
 
   const subscriptionData = {
-    metadata: { email, last_name, first_name, university },
+    metadata: { email, last_name, first_name },
   };
   if (campaignOpen) {
     // 30日間の無料トライアル（カードは登録するが初月は課金されない）
@@ -92,12 +90,7 @@ export async function POST(req) {
     customer_email: email,
     // 作成されるサブスクリプションにもメタデータを持たせ、Webhookでの突合に使う
     subscription_data: subscriptionData,
-    metadata: {
-      email,
-      last_name,
-      first_name,
-      university,
-    },
+    metadata: { email, last_name, first_name },
   });
 
   return NextResponse.json({
