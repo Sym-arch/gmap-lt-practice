@@ -98,11 +98,11 @@ export default function SignupForm() {
           last_name:  meta.family_name || meta.last_name  || "",
           first_name: meta.given_name  || meta.first_name || meta.name || user.email,
           email:      user.email,
+          isOAuth:    true,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        // 既登録エラー（重複）はホームへ
         if (res.status === 409) { window.location.href = "/"; return; }
         setError(data.error || "お手続きを開始できませんでした。");
         return;

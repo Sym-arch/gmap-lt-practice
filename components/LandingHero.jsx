@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SITE_NAME } from "@/lib/site";
 
 export default function LandingHero() {
   const [me, setMe] = useState(null);
@@ -14,28 +13,61 @@ export default function LandingHero() {
       .catch(() => setMe({ loggedIn: false, premium: false }));
   }, []);
 
-  // ログイン済みユーザーにはヒーローを出さず、「試験を選ぶ」セクションから始める
-  if (me?.loggedIn) {
-    return null;
-  }
+  // ログイン済みにはヒーローを出さない
+  if (me?.loggedIn) return null;
 
-  // 未ログイン（または取得中）の通常表示
   return (
-    <section className="hero">
-      <span className="hero-badge">GMAP(LT)・TG-WEB・玉手箱・SPI3 対応</span>
-      <h1>
-        外資系コンサルティングファーム
-        <br />
-        志望者のためのWebテスト模試
-      </h1>
-      <p>
-        {SITE_NAME}は、トップファーム内定を目指す方のための模擬試験プラットフォームです。
-        コンサルティングファームの出題傾向に合わせた問題と、思考プロセスから理解できる解説で、
-        選考突破に必要な力を着実に積み上げます。
-      </p>
-      <div className="hero-cta">
-        <Link href="/exams/gmap" className="btn">無料で試してみる</Link>
-        <Link href="/signup" className="btn secondary">会員登録する</Link>
+    <section className="lp-hero">
+      {/* 背景の光彩デコレーション */}
+      <div className="lp-hero-glow lp-hero-glow--tr" aria-hidden="true" />
+      <div className="lp-hero-glow lp-hero-glow--bl" aria-hidden="true" />
+
+      <div className="lp-hero-inner">
+        <div className="lp-hero-badge">
+          外資系コンサルティングファーム志望者向け
+        </div>
+
+        <h1 className="lp-hero-title">
+          トップファームの<br />
+          Webテスト、<span className="lp-hero-accent">突破する。</span>
+        </h1>
+
+        <p className="lp-hero-sub">
+          GMAP(LT)・TG-WEB・玉手箱・SPI3の4試験に完全特化。<br />
+          コンサルの選考傾向を徹底分析した問題と解説で、最短で実力を積み上げる。
+        </p>
+
+        <div className="lp-hero-cta">
+          <Link href="/exams/gmap" className="lp-btn-primary">
+            無料で体験する
+          </Link>
+          <Link href="/signup" className="lp-btn-outline">
+            会員登録する →
+          </Link>
+        </div>
+
+        {/* 数字バー */}
+        <div className="lp-hero-stats">
+          <div className="lp-stat">
+            <span className="lp-stat-num">4</span>
+            <span className="lp-stat-label">試験タイプ</span>
+          </div>
+          <div className="lp-stat-div" />
+          <div className="lp-stat">
+            <span className="lp-stat-num">400<span className="lp-stat-unit">問+</span></span>
+            <span className="lp-stat-label">収録問題数</span>
+          </div>
+          <div className="lp-stat-div" />
+          <div className="lp-stat">
+            <span className="lp-stat-num">10+</span>
+            <span className="lp-stat-label">対応ファーム</span>
+          </div>
+          <div className="lp-stat-div" />
+          <div className="lp-stat">
+            <span className="lp-stat-num">全問</span>
+            <span className="lp-stat-label">解説つき</span>
+          </div>
+        </div>
       </div>
     </section>
   );

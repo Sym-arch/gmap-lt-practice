@@ -28,6 +28,7 @@ export async function POST(req) {
   const last_name  = String(body.last_name  || "").trim();
   const first_name = String(body.first_name || "").trim();
   const email      = String(body.email      || "").trim();
+  const isOAuth    = Boolean(body.isOAuth);
 
   if (!first_name || !email) {
     return NextResponse.json({ error: "必須項目が未入力です。" }, { status: 400 });
@@ -39,9 +40,9 @@ export async function POST(req) {
     );
   }
 
-  // 既存ユーザーチェック（重複登録の防止）
+  // Google OAuthユーザーはSupabaseがauth.usersに自動作成するため重複チェックをスキップ
   const svc = getServiceClient();
-  if (svc) {
+  if (!isOAuth && svc) {
     const { data } = await svc.auth.admin.listUsers({ page: 1, perPage: 200 });
     const dup = data?.users?.some(
       (u) => (u.email || "").toLowerCase() === email.toLowerCase()
