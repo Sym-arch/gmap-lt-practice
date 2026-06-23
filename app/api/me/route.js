@@ -14,13 +14,17 @@ export async function GET() {
     if (daysSince >= 3) {
       const supabase = await getSupabaseServer();
       if (supabase) {
-        const { data } = await supabase
-          .from("survey_responses")
-          .select("id")
-          .eq("user_id", user.id)
-          .maybeSingle()
-          .catch(() => ({ data: null })); // テーブル未作成時もエラーを握りつぶす
-        surveyReminder = !data;
+        // テーブル未作成などで失敗してもログイン判定に影響させない
+        try {
+          const { data } = await supabase
+            .from("survey_responses")
+            .select("id")
+            .eq("user_id", user.id)
+            .maybeSingle();
+          surveyReminder = !data;
+        } catch {
+          surveyReminder = false;
+        }
       }
     }
   }
