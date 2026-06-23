@@ -143,8 +143,6 @@ export default function SignupForm() {
         return;
       }
 
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "";
       const { data: signData, error: signErr } = await supabase.auth.signUp({
         email: f.email.trim(),
         password: f.password,
@@ -155,7 +153,6 @@ export default function SignupForm() {
             university: f.university.trim(),
             full_name: `${f.last_name.trim()} ${f.first_name.trim()}`.trim(),
           },
-          emailRedirectTo: `${origin}/auth/confirm?next=/`,
         },
       });
       // すでに登録済みの場合（再決済など）はエラーにせず先へ
