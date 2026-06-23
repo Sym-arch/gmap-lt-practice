@@ -980,3 +980,170 @@ h2 { font-size: 17px; margin: 0 0 12px; }
 
   .auth-card { margin: 18px auto; }
 }
+
+/* =====================================================================
+   アンケートページ (SurveyForm / SurveyBanner)
+   ===================================================================== */
+
+/* 1〜5段階評価ボタン群 */
+.survey-rating-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.survey-rating-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 56px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--card);
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.survey-rating-btn:hover { border-color: var(--brand); }
+.survey-rating-active {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+.survey-rating-num {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+.survey-rating-active .survey-rating-num { color: var(--brand); }
+.survey-rating-label {
+  font-size: 10px;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* チェックボックス・ラジオグループ */
+.survey-check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.survey-check-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--card);
+  font-size: 13.5px;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.survey-check-item:hover { border-color: var(--brand); }
+.survey-check-item input:checked + span { color: var(--brand); font-weight: 700; }
+.survey-check-item:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+}
+
+/* テキストエリア・入力欄 */
+.survey-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--card);
+  resize: vertical;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.survey-textarea:focus { outline: none; border-color: var(--brand); }
+.survey-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--card);
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.survey-input:focus { outline: none; border-color: var(--brand); }
+
+/* 任意ラベル */
+.survey-optional {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  vertical-align: middle;
+}
+
+/* モニタープラン解約 CTA */
+.survey-portal-card { margin-bottom: 32px; }
+.survey-portal-btn { background: var(--ink) !important; color: #fff !important; }
+.survey-portal-btn:hover:not(:disabled) { background: #3a4a41 !important; }
+
+/* サインアップ3日後リマインダーバナー */
+.survey-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--brand-tint);
+  border: 1.5px solid var(--brand);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+.survey-banner-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.survey-banner-body b { font-size: 14.5px; }
+.survey-banner-body span { color: var(--ink-soft); }
+.survey-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.survey-banner-btn {
+  font-size: 13px;
+  padding: 8px 14px;
+}
+.survey-banner-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.survey-banner-close:hover { color: var(--ink); background: var(--line); }
+
+@media (max-width: 480px) {
+  .survey-rating-group { gap: 6px; }
+  .survey-rating-btn { min-width: 48px; padding: 7px 8px; }
+  .survey-rating-num { font-size: 16px; }
+  .survey-banner { flex-direction: column; align-items: flex-start; }
+  .survey-banner-actions { width: 100%; justify-content: flex-end; }
+}

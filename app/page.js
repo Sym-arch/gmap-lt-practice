@@ -1,11 +1,13 @@
 import LandingHero from "@/components/LandingHero";
 import PriceSection from "@/components/PriceSection";
 import ExamGrid from "@/components/ExamGrid";
+import SurveyBanner from "@/components/SurveyBanner";
 import { SITE_NAME } from "@/lib/site";
 
 export default function LandingPage() {
   return (
     <div>
+      <SurveyBanner />
       <LandingHero />
 
       <h2 className="section-title" id="exams">試験を選ぶ</h2>
