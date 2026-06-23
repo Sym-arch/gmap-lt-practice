@@ -58,8 +58,13 @@ export default function SignupForm() {
       .catch(() => setCampaign({ active: false }));
   }, []);
 
-  // Google OAuth でリダイレクトバックした場合を検知してStripe決済へ進む
+  // Google OAuth でリダイレクトバックした場合のみ検知（?oauth=1 が付いているときだけ）
   useEffect(() => {
+    const isOAuthReturn =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).has("oauth");
+    if (!isOAuthReturn) return;
+
     const supabase = getSupabaseBrowser();
     if (!supabase) return;
 
@@ -118,13 +123,12 @@ export default function SignupForm() {
     const supabase = getSupabaseBrowser();
     if (!supabase) return;
     setBusy(true);
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: typeof window !== "undefined" ? window.location.href : undefined,
-      },
-    });
-    // リダイレクトが走るのでここには通常来ない
+    // ?oauth=1 を付けることで、リダイレクトバック後に「OAuthからの帰還」と識別する
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/signup?oauth=1`
+        : undefined;
+    await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
     setBusy(false);
   }
 
