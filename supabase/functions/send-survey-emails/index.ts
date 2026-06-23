@@ -152,7 +152,37 @@ function tmplMonitorExpiredPaidStarted(name: string) {
 
 // ---- メイン ----
 
-Deno.serve(async (_req) => {
+Deno.serve(async (req) => {
+  let body: Record<string, unknown> = {};
+  try { body = await req.json(); } catch { /* body なし */ }
+
+  // テストモード：{ "test": true, "to": "your@email.com" } を POST すると
+  // 3種類のメールを全て指定アドレスへ送信（日数条件・重複チェックをスキップ）
+  if (body.test === true) {
+    const to = typeof body.to === "string" ? body.to : null;
+    if (!to) {
+      return new Response(
+        JSON.stringify({ ok: false, error: '"to" is required in test mode' }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+    const name = typeof body.name === "string" ? body.name : "テストユーザー";
+    const results: Record<string, boolean> = {};
+    for (const [type, tmpl] of [
+      ["survey_started",               tmplSurveyStarted(name)],
+      ["survey_reminder",              tmplSurveyReminder(name)],
+      ["monitor_expired_paid_started", tmplMonitorExpiredPaidStarted(name)],
+    ] as [string, { subject: string; html: string }][]) {
+      const r = await sendEmail(to, `[TEST] ${tmpl.subject}`, tmpl.html);
+      results[type] = r.ok;
+    }
+    return new Response(
+      JSON.stringify({ ok: true, mode: "test", to, results }),
+      { headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  // 通常モード：毎日 Cron から呼ばれる本番処理
   let sent = 0, skipped = 0, failed = 0;
   const errors: string[] = [];
 
