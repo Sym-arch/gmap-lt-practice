@@ -23,16 +23,6 @@ update public.subscriptions
   set plan = 'monitor'
   where source = 'campaign' and plan = 'normal';
 
--- purchases テーブルの旧買い切りユーザーを subscriptions へ移行
--- （subscriptions が無い人のみ insert）
-insert into public.subscriptions (user_id, status, plan)
-  select p.user_id, 'active', 'normal'
-  from public.purchases p
-  where not exists (
-    select 1 from public.subscriptions s where s.user_id = p.user_id
-  )
-on conflict (user_id) do nothing;
-
 -- 4. メール送信候補を取得する DB 関数
 -- auth.users へのアクセスが必要なため security definer で定義
 create or replace function public.get_monitor_email_candidates()

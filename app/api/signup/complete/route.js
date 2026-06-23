@@ -7,9 +7,9 @@ export const dynamic = "force-dynamic";
 
 /* POST /api/signup/complete
    body: { sessionId }
-   アカウント作成はクライアント側の supabase.auth.signUp で行う（Supabaseが認証メールを送る）。
-   このAPIは、決済が「支払い済み」であることを検証し、作成済みユーザーに purchases を紐づける。
-   ※ プロフィール（氏名・大学）は、メール認証完了時にトリガーが user_metadata から profiles へ転記する。 */
+   アカウント作成はクライアント側の supabase.auth.signUp で行う。
+   このAPIは決済が完了していることを検証し、subscriptions テーブルにプラン情報を保存する。
+   ※ プロフィール（氏名・大学）は email 確認時のトリガーが user_metadata から profiles へ転記する。 */
 export async function POST(req) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {

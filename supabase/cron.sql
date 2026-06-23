@@ -7,8 +7,8 @@
 --   「pg_cron」と「pg_net」を有効化してください
 --
 -- 変数の置き換え：
---   YOUR_PROJECT_REF  → Supabase Project Settings > General > Reference ID
---   YOUR_SERVICE_ROLE_KEY → Project Settings > API > service_role key
+--   YOUR_PROJECT_REF  →rdjjjgnyiakqmqwhlmxl
+--   YOUR_SERVICE_ROLE_KEY →
 -- ==============================================================
 
 -- 既存のジョブがあれば削除してから登録
@@ -22,10 +22,10 @@ select cron.schedule(
   $$
   select
     net.http_post(
-      url        := 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/send-survey-emails',
+      url        := 'https://rdjjjgnyiakqmqwhlmxl.supabase.co/functions/v1/send-survey-emails',
       headers    := jsonb_build_object(
                      'Content-Type',  'application/json',
-                     'Authorization', 'Bearer YOUR_SERVICE_ROLE_KEY'
+                     'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkampqZ255aWFrcW1xd2hsbXhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTE5OTQ2MywiZXhwIjoyMDk2Nzc1NDYzfQ.OxWzDPttIm0TnqxQvA380pfR8NU3cuGfz9lOarbOI8I'
                    ),
       body       := '{}'::jsonb
     ) as request_id;

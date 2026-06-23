@@ -78,7 +78,7 @@ export default function ProfilePanel() {
         <div>
           <div className="profile-email">{me.email}</div>
           <div className="profile-plan">
-            {me.premium ? "プレミアム会員" : "無料プラン"}
+            {me.isMonitor ? "モニタープラン" : me.premium ? "通常プラン" : ""}
           </div>
         </div>
       </div>
