@@ -26,8 +26,9 @@ export default function LoginForm() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.push(next);
-      router.refresh();
+      // SPA ナビゲーションではキャッシュの影響でセッションが認識されないため
+      // ハードナビゲーションでサーバーに Cookie を確実に送る
+      window.location.href = next;
     } catch (err) {
       setError(toJaError(err));
     } finally {
